@@ -4,6 +4,9 @@ namespace Bones\Message\Model;
 
 class Conversation
 {
+
+    public $id;
+
     /**
      * @var Message[]
      */
@@ -21,7 +24,7 @@ class Conversation
      */
     public function getId()
     {
-        // TODO: Implement getId() method.
+        return $this->id;
     }
 
     /**

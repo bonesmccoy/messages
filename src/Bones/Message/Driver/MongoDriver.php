@@ -19,15 +19,16 @@ class MongoDriver implements DriverInterface
      * @var \MongoClient
      */
     private $client;
+    private $dbName;
 
-    public function __construct($username, $password, $host, $port, $db, $connect = true)
+    public function __construct($dbName, $host = 'localhost', $port = 27017, $username = null, $password = null, $connect = true)
     {
         $url = sprintf("mongodb://%s%s%s%s/%s",
-            ($username) ? "$username:" : "",
-            ($password) ? "$password:" : "",
+            !empty($username) ? "$username:" : "",
+            !empty($password) ? "$password:" : "",
             $host,
-            $port,
-            $db
+            !empty($port) ? ":$port" : "",
+            $dbName
         );
 
         $options = array(
@@ -35,7 +36,29 @@ class MongoDriver implements DriverInterface
         );
 
         $this->client = new \MongoClient($url, $options);
+        $this->client->connect();
+        $this->dbName = $dbName;
+    }
 
+    public function getDb()
+    {
+        return $this->client->{$this->dbName};
+    }
+    /**
+     * @return \MongoCollection
+     */
+    private function getConversationCollection()
+    {
+        return $this->getDb()->{self::CONVERSATION_COLLECTION};
+    }
+
+    /**
+     * @return \MongoCollection
+     */
+    private function getMessageCollection()
+    {
+
+        return $this->getDb()->{self::MESSAGE_COLLECTION};
     }
 
     /**
@@ -44,7 +67,13 @@ class MongoDriver implements DriverInterface
      */
     public function findConversationById($id)
     {
-        // TODO: Implement findConversationById() method.
+        $conversation = $this
+            ->getConversationCollection()
+            ->findOne(
+                array('_id' => $id)
+            );
+
+        return $this->createConversationModel($conversation);
     }
 
     /**
@@ -102,9 +131,14 @@ class MongoDriver implements DriverInterface
      *
      * @return Conversation
      */
-    public function createConversationModel($conversationEntity, $messageEntityList)
+    public function createConversationModel($conversationEntity, $messageEntityList = array())
     {
-        // TODO: Implement createConversationModel() method.
+        $conversation = new Conversation();
+        $reflectionProperty = new \ReflectionProperty($conversation, 'id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($conversation, $conversationEntity["_id"]);
+
+        return $conversation;
     }
 
     public function createPersonModel($id)

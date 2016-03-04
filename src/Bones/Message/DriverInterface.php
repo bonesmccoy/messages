@@ -55,7 +55,7 @@ interface DriverInterface
      *
      * @return Conversation
      */
-    public function createConversationModel($conversationEntity, $messageEntityList);
+    public function createConversationModel($conversationEntity, $messageEntityList = array());
 
     public function createPersonModel($id);
 
