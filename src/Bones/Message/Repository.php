@@ -3,6 +3,7 @@
 namespace Bones\Message;
 
 use Bones\Message\Model\Conversation;
+use Bones\Message\Model\Person;
 
 class Repository implements RepositoryInterface
 {
@@ -36,11 +37,16 @@ class Repository implements RepositoryInterface
      * @param int $limit
      * @param string $sorting
      *
-     * @return mixed
+     * @return Conversation
      */
     public function getConversationMessageList(Conversation $conversation, $offset = 0, $limit = 20, $sorting = 'ASC')
     {
-        $this->driver->findMessagesByConversation($conversation, $offset, $limit, $sorting);
+        foreach($this->driver->findMessagesByConversation($conversation, $offset, $limit, $sorting) as $message) {
+            $conversation->addMessage($message);
+        }
+
+        return $conversation;
+
     }
 
     /**
@@ -64,7 +70,8 @@ class Repository implements RepositoryInterface
 
     /**
      * @param Conversation $conversation
-     * @return int
+     *
+     * @return Person[]
      */
     public function getPeople(Conversation $conversation)
     {
