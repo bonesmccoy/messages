@@ -40,7 +40,7 @@ class MongoDriver implements DriverInterface
         $this->dbName = $dbName;
     }
 
-    public function getDb()
+    private function getDb()
     {
         return $this->client->{$this->dbName};
     }
