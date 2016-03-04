@@ -2,7 +2,7 @@
 
 namespace Bones\Message\Model;
 
-class Conversation implements ConversationInterface
+class Conversation
 {
     /**
      * @var Message[]
@@ -13,6 +13,7 @@ class Conversation implements ConversationInterface
      * @var Person[]
      */
     protected $personList = array();
+
 
     /** @return string */
     public function getId()

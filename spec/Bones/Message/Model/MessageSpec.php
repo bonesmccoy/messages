@@ -2,6 +2,7 @@
 
 namespace spec\Bones\Message\Model;
 
+use Bones\Message\Model\Conversation;
 use Bones\Message\Model\ConversationInterface;
 use Bones\Message\Model\Person;
 use PhpSpec\ObjectBehavior;
@@ -9,7 +10,7 @@ use Prophecy\Argument;
 
 class MessageSpec extends ObjectBehavior
 {
-    function let(Person $person, ConversationInterface $conversation)
+    function let(Person $person, Conversation $conversation)
     {
         $person->beADoubleOf('Bones\Message\Model\Person');
         $conversation->beADoubleOf('Bones\Message\Model\Conversation');
