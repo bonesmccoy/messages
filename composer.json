@@ -3,7 +3,8 @@
     "require": {
     },
     "require-dev": {
-      "phpspec/phpspec": "~2.0"
+      "phpspec/phpspec": "~2.0",
+      "phpunit/phpunit": "4.8.*"
     },
     "config": {
       "bin-dir": "bin"
