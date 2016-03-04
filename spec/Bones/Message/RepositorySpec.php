@@ -61,12 +61,28 @@ class RepositorySpec extends ObjectBehavior
 
     function it_can_count_messages_for_a_given_conversation()
     {
+        $conversation = new Conversation();
+        $this
+            ->driver
+            ->countMessages($conversation)
+            ->willReturn(4);
 
+        $this
+            ->countMessages($conversation)
+            ->shouldReturn(4);
     }
 
     function it_can_count_people_for_a_given_conversation()
     {
+        $conversation = new Conversation();
+        $this
+            ->driver
+            ->countPeople($conversation)
+            ->willReturn(4);
 
+        $this
+            ->countPeople($conversation)
+            ->shouldReturn(4);
     }
 
 
@@ -76,24 +92,35 @@ class RepositorySpec extends ObjectBehavior
     }
 
 
-
-
     public function getMatchers()
     {
         return array(
-                'returnMessageCollection' => function($subject, $value) {
-                    foreach($value as $element) {
-                        if (!($element instanceof Message)) {
-                            throw new FailureException(
-                                sprintf("%s expected, %s found",
-                                    'Bones\Message\Model\Message',
-                                    get_class($element)
-                                )
-                            );
-                        }
+            'returnMessageCollection' => function($subject, $value) {
+                foreach($value as $element) {
+                    if (!($element instanceof Message)) {
+                        throw new FailureException(
+                            sprintf("%s expected, %s found",
+                                'Bones\Message\Model\Message',
+                                get_class($element)
+                            )
+                        );
                     }
-                    return true;
                 }
+                return true;
+            },
+            'returnPersonCollection' => function($subject, $value) {
+                foreach($value as $element) {
+                    if (!($element instanceof Person)) {
+                        throw new FailureException(
+                            sprintf("%s expected, %s found",
+                                'Bones\Message\Model\Person',
+                                get_class($element)
+                            )
+                        );
+                    }
+                }
+                return true;
+            }
         );
     }
 }
