@@ -74,10 +74,10 @@ class FixtureLoader
     }
 
     /**
-     * @param $databaseConfiguration
+     * @param DatabaseConfiguration $databaseConfiguration
      * @return \MongoClient
      */
-    private function createClient($databaseConfiguration)
+    private function createClient(DatabaseConfiguration $databaseConfiguration)
     {
         $client = new \MongoClient(
             $databaseConfiguration->getConnectionUrl(),
@@ -90,7 +90,7 @@ class FixtureLoader
      * @param $databaseConfiguration
      * @param $client
      */
-    private function insertFixtures($databaseConfiguration, $client)
+    private function insertFixtures(DatabaseConfiguration $databaseConfiguration, $client)
     {
         foreach ($this->fixtures as $collection => $fixtures) {
             $dbName = $databaseConfiguration->getDatabaseName();
