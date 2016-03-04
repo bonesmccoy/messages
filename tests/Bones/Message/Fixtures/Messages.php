@@ -1,6 +1,6 @@
 <?php
 
-$fixtures['messages']  = array(
+$fixtures[\Bones\Message\Driver\MongoDriver::MESSAGE_COLLECTION]  = array(
     array("_id" => 1, "conversation" => 1, "sender" => 1, "recipient" => array(2, 3, 4), 'title' => 'title', 'body' => 'body', 'date' => new MongoDate()),
     array("_id" => 2, "conversation" => 1, "sender" => 2, "recipient" => array(1, 3, 4), 'title' => 'title', 'body' => 'body', 'date' => new MongoDate()),
     array("_id" => 3, "conversation" => 1, "sender" => 3, "recipient" => array(2, 1, 4), 'title' => 'title', 'body' => 'body', 'date' => new MongoDate()),
