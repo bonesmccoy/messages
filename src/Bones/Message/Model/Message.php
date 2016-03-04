@@ -103,9 +103,9 @@ class Message
     }
 
 
-    public function addRecipient(Person $user)
+    public function addRecipient(Person $person)
     {
-        $this->recipients[$user->getId()] = $user;
+        $this->recipients[$person->getId()] = $person;
     }
 
 
@@ -118,29 +118,29 @@ class Message
     }
 
 
-    public function markAsReadForPerson(Person $user)
+    public function markAsReadForPerson(Person $person)
     {
-        if (isset($this->recipients[$user->getId()]) &&
-            !isset($this->readers[$user->getId()])
+        if (isset($this->recipients[$person->getId()]) &&
+            !isset($this->readers[$person->getId()])
         ) {
-            $this->readers[$user->getId()] = new \DateTime();
+            $this->readers[$person->getId()] = new \DateTime();
         }
     }
 
-    public function isReadFromPerson(Person $user)
+    public function isReadFromPerson(Person $person)
     {
-        return (isset($this->readers[$user->getId()]));
+        return (isset($this->readers[$person->getId()]));
     }
 
-    public function getReadDateForUser(Person $user)
+    public function getReadDateForUser(Person $person)
     {
-        return  $this->isReadFromPerson($user)? $this->readers[$user->getId()] : null;
+        return  $this->isReadFromPerson($person)? $this->readers[$person->getId()] : null;
     }
 
-    public function markAsUnreadForPerson(Person $user)
+    public function markAsUnreadForPerson(Person $person)
     {
-        if (isset($this->readers[$user->getId()])) {
-            unset($this->readers[$user->getId()]);
+        if (isset($this->readers[$person->getId()])) {
+            unset($this->readers[$person->getId()]);
         }
     }
 

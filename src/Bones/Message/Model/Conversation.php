@@ -15,35 +15,54 @@ class Conversation
     protected $personList = array();
 
 
-    /** @return string */
+    /**
+     * Returns the Id of the Conversation
+     * @return string
+     */
     public function getId()
     {
         // TODO: Implement getId() method.
     }
 
-    /** @return Person[] */
+    /**
+     * Returns all the person involved in this conversation
+     *
+     * @return Person[]
+     */
     public function getPersonList()
     {
         return $this->personList;
     }
 
-    /** @return Message[] */
+    /**
+     * Returns all the messages in this conversation
+     *
+     * @return Message[]
+     */
     public function getMessageList()
     {
         return $this->messageList;
     }
 
     /**
+     * Adds a message in this conversation
+     *
      * @param Message $message
      */
     public function addMessage(Message $message)
     {
         $this->messageList[$message->getDate()->format("Ymdhist")] = $message;
-        $this->addPersonFromMessage($message);
+        $this->addPersonsFromMessage($message);
 
      }
 
-    private function addPersonFromMessage(Message $message)
+    /**
+     * Adds all the person object involved in the message
+     * to the conversation
+     *
+     * @param Message $message
+     */
+    private function addPersonsFromMessage(Message $message)
     {
         $sender = $message->getSender();
         $this->addPersonIfNotExists($sender);
@@ -53,12 +72,14 @@ class Conversation
     }
 
     /**
-     * @param Person $user
+     * Add person to list if is not already present.
+     *
+     * @param Person $person
      */
-    private function addPersonIfNotExists(Person $user)
+    private function addPersonIfNotExists(Person $person)
     {
-        if (!isset($this->personList[$user->getId()])) {
-            $this->personList[$user->getId()] = $user;
+        if (!isset($this->personList[$person->getId()])) {
+            $this->personList[$person->getId()] = $person;
         }
     }
 }
