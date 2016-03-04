@@ -7,28 +7,29 @@ namespace Bones\Message\Driver;
 use Bones\Message\DriverInterface;
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
+use Bones\Message\Model\Person;
 
 class MongoDriver implements DriverInterface
 {
 
-    const CONVERSATION_COLLECTION = 'conversation';
-    const MESSAGE_COLLECTION = 'message';
+    const CONVERSATION_COLLECTION = 'conversations';
+    const MESSAGE_COLLECTION = 'messages';
 
 
     /**
      * @var \MongoClient
      */
     private $client;
-    private $dbName;
+    private $databaseName;
 
-    public function __construct($dbName, $host = 'localhost', $port = 27017, $username = null, $password = null, $connect = true)
+    public function __construct($databaseName, $host = 'localhost', $port = 27017, $username = null, $password = null, $connect = true)
     {
         $url = sprintf("mongodb://%s%s%s%s/%s",
             !empty($username) ? "$username:" : "",
             !empty($password) ? "$password:" : "",
             $host,
             !empty($port) ? ":$port" : "",
-            $dbName
+            $databaseName
         );
 
         $options = array(
@@ -36,13 +37,12 @@ class MongoDriver implements DriverInterface
         );
 
         $this->client = new \MongoClient($url, $options);
-        $this->client->connect();
-        $this->dbName = $dbName;
+        $this->databaseName = $databaseName;
     }
 
     private function getDb()
     {
-        return $this->client->{$this->dbName};
+        return $this->client->{$this->databaseName};
     }
     /**
      * @return \MongoCollection
@@ -57,7 +57,6 @@ class MongoDriver implements DriverInterface
      */
     private function getMessageCollection()
     {
-
         return $this->getDb()->{self::MESSAGE_COLLECTION};
     }
 
@@ -85,7 +84,20 @@ class MongoDriver implements DriverInterface
      */
     public function findMessagesByConversation(Conversation $conversation, $offset = 0, $limit = 20, $sortOrder = 'ASC')
     {
-        // TODO: Implement findMessagesByConversation() method.
+        $cursor = $this
+            ->getMessageCollection()
+            ->find(
+                array('conversation' => $conversation->getId())
+            );
+
+        $messages = array();
+
+        foreach ($cursor as $messageEntity) {
+            $message = $this->createMessageModel($messageEntity, $conversation);
+            $messages[$message->getId()] = $message;
+        }
+
+        return $messages;
     }
 
     /**
@@ -118,11 +130,28 @@ class MongoDriver implements DriverInterface
 
     /**
      * @param $messageEntity
+     * @param Conversation $conversation
      * @return Message
      */
-    public function createMessageModel($messageEntity)
+    public function createMessageModel($messageEntity, Conversation $conversation)
     {
-        // TODO: Implement createMessageModel() method.
+        $message = new Message(
+            $conversation,
+            new Person($messageEntity['sender']),
+            $messageEntity['body']
+        );
+        $reflectionProperty = new \ReflectionProperty($message, 'id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($message, $messageEntity['_id']);
+        $reflectionProperty->setAccessible(false);
+
+        if (!empty($messageEntity)) {
+            foreach ($messageEntity['recipient'] as $recipientId) {
+                $message->addRecipient(new Person($recipientId));
+            }
+        }
+
+        return $message;
     }
 
     /**
@@ -137,6 +166,7 @@ class MongoDriver implements DriverInterface
         $reflectionProperty = new \ReflectionProperty($conversation, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($conversation, $conversationEntity["_id"]);
+        $reflectionProperty->setAccessible(false);
 
         return $conversation;
     }

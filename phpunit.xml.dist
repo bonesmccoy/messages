@@ -19,6 +19,6 @@
         </whitelist>
     </filter>
     <php>
-        <env name="TestDbName" value="message_test"/>
+        <env name="TestDbName" value="messages_test"/>
     </php>
 </phpunit>

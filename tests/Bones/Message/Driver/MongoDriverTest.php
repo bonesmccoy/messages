@@ -29,7 +29,21 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
     {
         $conversation = $this->driver->findConversationById(1);
 
-        $this->assertInstanceOf('\Bones\Message\Conversation', $conversation);
+        $this->assertInstanceOf('\Bones\Message\Model\Conversation', $conversation);
+    }
+
+
+    public function testReturnMessagesListByConversationId()
+    {
+        $conversation = $this->driver->findConversationById(1);
+
+        $messageList = $this->driver->findMessagesByConversation($conversation);
+
+        $this->assertCount(4, $messageList);
+
+        foreach($messageList as $message) {
+            $this->assertInstanceof('\Bones\Message\Model\Message', $message);
+        }
     }
 
 

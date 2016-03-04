@@ -45,9 +45,10 @@ interface DriverInterface
 
     /**
      * @param $messageEntity
+     * @param Conversation $conversation
      * @return Message
      */
-    public function createMessageModel($messageEntity);
+    public function createMessageModel($messageEntity, Conversation $conversation);
 
     /**
      * @param $conversationEntity
