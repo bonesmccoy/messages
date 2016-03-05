@@ -207,6 +207,7 @@ class MongoDriver implements DriverInterface
         return count($peopleInvolvedInConversation);
     }
 
+
     public function persistConversation(Conversation $conversation)
     {
         // TODO: Implement persistConversation() method.

@@ -128,4 +128,32 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
             $conversations->count()
         );
     }
+
+    public function testFindAllSentMessages()
+    {
+        $messages = $this->driver->findAllSentMessage(10);
+        $this->assertEquals(
+            1,
+            $messages->count()
+        );
+
+        $messages = $this->driver->findAllSentMessage(2);
+        $this->assertEquals(
+            2,
+            $messages->count()
+        );
+
+
+    }
+
+    public function testFindAllReceivedMessages()
+    {
+        $messages = $this
+                    ->driver
+                    ->findAllReceivedMessages(1);
+        $this->assertEquals(
+            4,
+            $messages->count()
+        );
+    }
 }
