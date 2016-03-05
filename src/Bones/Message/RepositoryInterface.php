@@ -26,7 +26,7 @@ interface RepositoryInterface
      *
      * @return mixed
      */
-    public function getConversationMessageList(Conversation $conversation, $offset = 0, $limit = 20, $sorting = 'ASC');
+    public function getConversationMessageList(Conversation $conversation, $offset = null, $limit = null, $sorting = 'ASC');
 
 
     /**

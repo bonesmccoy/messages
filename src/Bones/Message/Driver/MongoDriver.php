@@ -60,6 +60,30 @@ class MongoDriver implements DriverInterface
         return $this->getDb()->{self::MESSAGE_COLLECTION};
     }
 
+    public function findAllMessages()
+    {
+        $cursor = $this
+            ->getMessageCollection()
+            ->find();
+
+        return $this->createMessageModelCollection(new Conversation(), $cursor);
+    }
+
+    public function findAllConversations()
+    {
+        $cursor = $this
+            ->getConversationCollection()
+            ->find();
+
+        $conversations = array();
+        foreach($cursor as $conversationEntity) {
+            $conversation = $this->createConversationModel($conversationEntity);
+            $conversations[$conversation->getId()] =  $conversation;
+        }
+
+        return $conversations;
+    }
+
     /**
      * @param $id
      * @return Conversation
@@ -82,7 +106,7 @@ class MongoDriver implements DriverInterface
      * @param string $sortOrder
      * @return Message[]
      */
-    public function findMessagesByConversation(Conversation $conversation, $offset = 0, $limit = 20, $sortOrder = 'ASC')
+    public function findMessagesByConversation(Conversation $conversation, $offset = null, $limit = null, $sortOrder = 'ASC')
     {
         $cursor = $this
             ->getMessageCollection()
@@ -90,14 +114,14 @@ class MongoDriver implements DriverInterface
                 array('conversation' => $conversation->getId())
             );
 
-        $messages = array();
-
-        foreach ($cursor as $messageEntity) {
-            $message = $this->createMessageModel($messageEntity, $conversation);
-            $messages[$message->getId()] = $message;
+        if ($offset) {
+            $cursor->skip($offset);
+        }
+        if ($limit) {
+            $cursor->limit($limit);
         }
 
-        return $messages;
+        return $this->createMessageModelCollection($conversation, $cursor);
     }
 
     /**
@@ -190,5 +214,22 @@ class MongoDriver implements DriverInterface
     public function createPersonModel($id)
     {
         // TODO: Implement createPersonModel() method.
+    }
+
+    /**
+     * @param Conversation $conversation
+     * @param $cursor
+     * @return array
+     */
+    private function createMessageModelCollection(Conversation $conversation, $cursor)
+    {
+        $messages = array();
+
+        foreach ($cursor as $messageEntity) {
+            $message = $this->createMessageModel($messageEntity, $conversation);
+            $messages[$message->getId()] = $message;
+        }
+
+        return $messages;
     }
 }

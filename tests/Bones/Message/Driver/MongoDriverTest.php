@@ -77,6 +77,46 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testFindAllMessages()
+    {
+        $messages = $this->driver->findAllMessages();
+        $this->assertCount(
+            6,
+            $messages
+        );
+        foreach($messages as $message) {
+            $this->assertInstanceOf(
+                'Bones\Message\Model\Message',
+                $message
+            );
+        }
+    }
+
+    public function testLimitMessageQuery()
+    {
+        $conversation = $this->driver->findConversationById(1);
+        $messages = $this->driver->findMessagesByConversation($conversation, 0, 2);
+        $this->assertCount(
+            2,
+            $messages
+        );
+    }
+
+    public function testFindAllConversations()
+    {
+        $conversations = $this->driver->findAllConversations();
+        $this->assertCount(
+            4,
+            $conversations
+        );
+
+        foreach($conversations as $conversation) {
+            $this->assertInstanceOf(
+                'Bones\Message\Model\Conversation',
+                $conversation
+            );
+        }
+    }
 
 
 }

@@ -23,7 +23,7 @@ interface DriverInterface
      * @param string $sortOrder
      * @return Message[]
      */
-    public function findMessagesByConversation(Conversation $conversation, $offset = 0, $limit = 20, $sortOrder = 'ASC');
+    public function findMessagesByConversation(Conversation $conversation, $offset = null, $limit = null, $sortOrder = 'ASC');
 
     /**
      * @param Conversation $conversation

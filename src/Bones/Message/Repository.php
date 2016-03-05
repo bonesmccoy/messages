@@ -39,7 +39,7 @@ class Repository implements RepositoryInterface
      *
      * @return Conversation
      */
-    public function getConversationMessageList(Conversation $conversation, $offset = 0, $limit = 20, $sorting = 'ASC')
+    public function getConversationMessageList(Conversation $conversation, $offset = null, $limit = null, $sorting = 'ASC')
     {
         foreach($this->driver->findMessagesByConversation($conversation, $offset, $limit, $sorting) as $message) {
             $conversation->addMessage($message);
