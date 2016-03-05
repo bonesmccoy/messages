@@ -106,7 +106,11 @@ class MongoDriver implements DriverInterface
      */
     public function countMessages(Conversation $conversation)
     {
-        // TODO: Implement countMessages() method.
+        return $this
+            ->getMessageCollection()
+            ->find(
+                array('conversation' => $conversation->getId())
+            )->count();
     }
 
     /**
@@ -115,7 +119,10 @@ class MongoDriver implements DriverInterface
      */
     public function countPeople(Conversation $conversation)
     {
-        // TODO: Implement countPeople() method.
+        $people = $this
+            ->getMessageCollection()
+            ->distinct('recipient.id', array('conversation' => $conversation->getId()));
+        return $people->count();
     }
 
     public function persistConversation(Conversation $conversation)
@@ -146,8 +153,8 @@ class MongoDriver implements DriverInterface
         $reflectionProperty->setAccessible(false);
 
         if (!empty($messageEntity)) {
-            foreach ($messageEntity['recipient'] as $recipientId) {
-                $message->addRecipient(new Person($recipientId));
+            foreach ($messageEntity['recipient'] as $recipient) {
+                $message->addRecipient(new Person($recipient['id']));
             }
         }
 

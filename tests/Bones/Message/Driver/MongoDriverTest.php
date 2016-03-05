@@ -46,6 +46,22 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testCountMessages()
+    {
+        $conversation = $this->driver->findConversationById(1);
+        $this->assertEquals(
+            4,
+            $this->driver->countMessages($conversation)
+        );
+
+        $conversation = $this->driver->findConversationById(2);
+
+        $this->assertEquals(
+            2,
+            $this->driver->countMessages($conversation)
+        );
+    }
+
 
 
 }
