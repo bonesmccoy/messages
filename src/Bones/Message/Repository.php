@@ -76,7 +76,7 @@ class Repository implements RepositoryInterface
     public function getPeople(Conversation $conversation)
     {
         foreach ($this->driver->findMessagesByConversation($conversation, null, null) as $messageEntity) {
-            $messageModel = $this->driver->createMessageModel($messageEntity);
+            $messageModel = $this->driver->createMessageModel($messageEntity, $conversation);
             $conversation->addMessage($messageModel);
         }
 
