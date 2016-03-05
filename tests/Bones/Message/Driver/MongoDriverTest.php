@@ -62,6 +62,21 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testCountPeople()
+    {
+        $conversation = $this->driver->findConversationById(1);
+        $this->assertEquals(
+            4,
+            $this->driver->countPeople($conversation)
+        );
+
+        $conversation = $this->driver->findConversationById(2);
+        $this->assertEquals(
+            3,
+            $this->driver->countPeople($conversation)
+        );
+    }
+
 
 
 }

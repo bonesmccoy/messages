@@ -119,10 +119,19 @@ class MongoDriver implements DriverInterface
      */
     public function countPeople(Conversation $conversation)
     {
-        $people = $this
+        $recipients = $this
             ->getMessageCollection()
             ->distinct('recipient.id', array('conversation' => $conversation->getId()));
-        return $people->count();
+
+        $senders = $this->
+                    getMessageCollection()
+                    ->distinct("sender", array('conversation' => $conversation->getId()));
+
+        $peopleInvolvedInConversation = array_unique(
+            array_merge($senders, $recipients)
+        );
+
+        return count($peopleInvolvedInConversation);
     }
 
     public function persistConversation(Conversation $conversation)
