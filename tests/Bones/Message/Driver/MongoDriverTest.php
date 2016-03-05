@@ -27,53 +27,52 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnConversationById()
     {
-        $conversation = $this->driver->findConversationById(1);
+        $conversationDocument = $this->driver->findConversationById(1);
 
-        $this->assertInstanceOf('\Bones\Message\Model\Conversation', $conversation);
+        $this->assertArrayHasKey('_id', $conversationDocument);
+        $this->assertEquals(1, $conversationDocument['_id']);
+
     }
 
 
     public function testReturnMessagesListByConversationId()
     {
-        $conversation = $this->driver->findConversationById(1);
-
-        $messageList = $this->driver->findMessagesByConversation($conversation);
+        $messageList = $this->driver->findMessagesByConversationId(1);
 
         $this->assertCount(4, $messageList);
 
-        foreach($messageList as $message) {
-            $this->assertInstanceof('\Bones\Message\Model\Message', $message);
+        foreach($messageList as $messageDocument) {
+            $this->assertArrayHasKey('_id', $messageDocument);
+            $this->assertArrayHasKey('sender', $messageDocument);
+            $this->assertArrayHasKey('recipient', $messageDocument);
+            $this->assertArrayHasKey('title', $messageDocument);
+            $this->assertArrayHasKey('body', $messageDocument);
         }
     }
 
     public function testCountMessages()
     {
-        $conversation = $this->driver->findConversationById(1);
         $this->assertEquals(
             4,
-            $this->driver->countMessages($conversation)
+            $this->driver->countMessages(1)
         );
-
-        $conversation = $this->driver->findConversationById(2);
 
         $this->assertEquals(
             2,
-            $this->driver->countMessages($conversation)
+            $this->driver->countMessages(2)
         );
     }
 
     public function testCountPeople()
     {
-        $conversation = $this->driver->findConversationById(1);
         $this->assertEquals(
             4,
-            $this->driver->countPeople($conversation)
+            $this->driver->countPeople(1)
         );
 
-        $conversation = $this->driver->findConversationById(2);
         $this->assertEquals(
             3,
-            $this->driver->countPeople($conversation)
+            $this->driver->countPeople(2)
         );
     }
 
@@ -84,18 +83,18 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
             6,
             $messages
         );
-        foreach($messages as $message) {
-            $this->assertInstanceOf(
-                'Bones\Message\Model\Message',
-                $message
-            );
+        foreach($messages as $messageDocument) {
+            $this->assertArrayHasKey('_id', $messageDocument);
+            $this->assertArrayHasKey('sender', $messageDocument);
+            $this->assertArrayHasKey('recipient', $messageDocument);
+            $this->assertArrayHasKey('title', $messageDocument);
+            $this->assertArrayHasKey('body', $messageDocument);
         }
     }
 
     public function testLimitMessageQuery()
     {
-        $conversation = $this->driver->findConversationById(1);
-        $messages = $this->driver->findMessagesByConversation($conversation, 0, 2);
+        $messages = $this->driver->findMessagesByConversationId(1, 0, 2);
         $this->assertCount(
             2,
             $messages
@@ -110,11 +109,8 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
             $conversations
         );
 
-        foreach($conversations as $conversation) {
-            $this->assertInstanceOf(
-                'Bones\Message\Model\Conversation',
-                $conversation
-            );
+        foreach($conversations as $conversationDocument) {
+            $this->assertArrayHasKey('_id', $conversationDocument);
         }
     }
 

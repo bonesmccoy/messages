@@ -3,6 +3,7 @@
 namespace Bones\Message;
 
 use Bones\Message\Model\Conversation;
+use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
 
 class Repository implements RepositoryInterface
@@ -41,7 +42,7 @@ class Repository implements RepositoryInterface
      */
     public function getConversationMessageList(Conversation $conversation, $offset = null, $limit = null, $sorting = 'ASC')
     {
-        foreach($this->driver->findMessagesByConversation($conversation, $offset, $limit, $sorting) as $message) {
+        foreach($this->driver->findMessagesByConversationId($conversation, $offset, $limit, $sorting) as $message) {
             $conversation->addMessage($message);
         }
 
@@ -75,11 +76,59 @@ class Repository implements RepositoryInterface
      */
     public function getPeople(Conversation $conversation)
     {
-        foreach ($this->driver->findMessagesByConversation($conversation, null, null) as $messageEntity) {
+        foreach ($this->driver->findMessagesByConversationId($conversation, null, null) as $messageEntity) {
             $messageModel = $this->driver->createMessageModel($messageEntity, $conversation);
             $conversation->addMessage($messageModel);
         }
 
         return $conversation->getPersonList();
+    }
+
+    /**
+     * @param $messageDocument
+     * @param Conversation $conversation
+     * @return Message
+     */
+    public function createMessageModel($messageDocument, Conversation $conversation)
+    {
+        $message = new Message(
+            $conversation,
+            new Person($messageDocument['sender']),
+            $messageDocument['body']
+        );
+        $reflectionProperty = new \ReflectionProperty($message, 'id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($message, $messageDocument['_id']);
+        $reflectionProperty->setAccessible(false);
+
+        if (!empty($messageDocument)) {
+            foreach ($messageDocument['recipient'] as $recipient) {
+                $message->addRecipient(new Person($recipient['id']));
+            }
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param $conversationDocument
+     * @param array $messageDocumentList
+     *
+     * @return Conversation
+     */
+    public function createConversationModel($conversationDocument, $messageDocumentList = array())
+    {
+        $conversation = new Conversation();
+        $reflectionProperty = new \ReflectionProperty($conversation, 'id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($conversation, $conversationDocument["_id"]);
+        $reflectionProperty->setAccessible(false);
+
+        foreach($messageDocumentList as $messageDocument) {
+            $message = $this->createMessageModel($conversation, $messageDocument);
+            $conversation->addMessage($message);
+        }
+
+        return $conversation;
     }
 }

@@ -17,48 +17,30 @@ interface DriverInterface
     public function findConversationById($id);
 
     /**
-     * @param Conversation $conversation
+     * @param int $conversationId
      * @param int $offset
      * @param int $limit
      * @param string $sortOrder
-     * @return Message[]
+     * @return array
      */
-    public function findMessagesByConversation(Conversation $conversation, $offset = null, $limit = null, $sortOrder = 'ASC');
+    public function findMessagesByConversationId($conversationId, $offset = null, $limit = null, $sortOrder = 'ASC');
 
     /**
-     * @param Conversation $conversation
+     * @param $conversationId
      * @return int
      */
-    public function countMessages(Conversation $conversation);
+    public function countMessages($conversationId);
 
     /**
-     * @param Conversation $conversation
+     * @param $conversationId
      * @return int
      */
-    public function countPeople(Conversation $conversation);
+    public function countPeople($conversationId);
 
 
     public function persistConversation(Conversation $conversation);
 
 
     public function persistMessage(Message $message);
-
-    /**
-     * @param $messageEntity
-     * @param Conversation $conversation
-     * @return Message
-     */
-    public function createMessageModel($messageEntity, Conversation $conversation);
-
-    /**
-     * @param $conversationEntity
-     * @param array $messageEntityList
-     *
-     * @return Conversation
-     */
-    public function createConversationModel($conversationEntity, $messageEntityList = array());
-
-    public function createPersonModel($id);
-
 
 }
