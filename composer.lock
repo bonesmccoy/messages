@@ -4,10 +4,44 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1174d9c9dd6e1a6a444775c8a1fe113d",
-    "content-hash": "e9adf6807ce65fc6d9aafee4ed7bf788",
+    "hash": "c1cf95e87c3d4d29b6b03cd45d38b59c",
+    "content-hash": "8730801ec7446e5caab2ac10b26768f6",
     "packages": [],
     "packages-dev": [
+        {
+            "name": "bonesmccoy/bongo-fixture-loader",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bonesmccoy/bongo-fixture-loader.git",
+                "reference": "bd2a5a25f87ec27cb99409ff765a2223f889ec78"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bonesmccoy/bongo-fixture-loader/zipball/bd2a5a25f87ec27cb99409ff765a2223f889ec78",
+                "reference": "bd2a5a25f87ec27cb99409ff765a2223f889ec78",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mongo": "*",
+                "php": ">5.4",
+                "symfony/yaml": "*"
+            },
+            "bin": [
+                "bin/bongo-load"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/bonesmccoy/bongo-fixture-loader/tree/master",
+                "issues": "https://github.com/bonesmccoy/bongo-fixture-loader/issues"
+            },
+            "time": "2016-03-05 12:08:44"
+        },
         {
             "name": "doctrine/instantiator",
             "version": "1.0.5",

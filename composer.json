@@ -1,12 +1,18 @@
 {
     "name": "bonesmccoy/messages",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:bonesmccoy/bongo-fixture-loader.git"
+        }
+    ],
     "require": {
 
     },
     "require-dev": {
       "phpspec/phpspec": "~2.0",
       "phpunit/phpunit": "4.8.*",
-      "symfony/yaml" : "*"
+      "bonesmccoy/bongo-fixture-loader" : "*"
     },
     "config": {
       "bin-dir": "bin"
