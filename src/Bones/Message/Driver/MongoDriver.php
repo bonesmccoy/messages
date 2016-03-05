@@ -76,6 +76,50 @@ class MongoDriver implements DriverInterface
         return $cursor;
     }
 
+    public function findAllSentMessage($personId)
+    {
+        return $this
+            ->getMessageCollection()
+            ->find(array('sender' => $personId));
+    }
+
+    public function findAllReceivedMessages($personId)
+    {
+        return $this
+                ->getMessageCollection()
+                ->find(array(
+                    'recipient.id' => $personId
+                ));
+    }
+
+    public function findAllConversationForPerson($personId)
+    {
+        $cursor =  $this
+                ->getMessageCollection()
+                ->find(array(
+                    '$or' => array(
+                        array('sender' => $personId),
+                        array('recipient.id' => $personId)
+                        )
+                    ),
+                    array('conversation')
+                );
+        $conversationIdList = array();
+
+        foreach($cursor as $cId) {
+            $conversationIdList[] = $cId['conversation'];
+        }
+
+        return $this
+            ->getConversationCollection()
+            ->find(array(
+                    '_id' => array(
+                        '$in' => $conversationIdList
+                    )
+                )
+            );
+    }
+
     public function findAllConversations()
     {
         $cursor = $this

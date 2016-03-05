@@ -80,7 +80,7 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
     {
         $messages = $this->driver->findAllMessages();
         $this->assertCount(
-            6,
+            7,
             $messages
         );
         foreach($messages as $messageDocument) {
@@ -114,5 +114,18 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testFindAllConversationsForAGivenPerson()
+    {
+        $conversations = $this->driver->findAllConversationForPerson(10);
+        $this->assertEquals(
+            1,
+            $conversations->count()
+        );
 
+        $conversations = $this->driver->findAllConversationForPerson(15);
+        $this->assertEquals(
+            1,
+            $conversations->count()
+        );
+    }
 }
