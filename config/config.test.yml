@@ -9,5 +9,5 @@ config:
 
   fixtures:
       paths:
-        - Bones/Message/Fixtures
+        - tests/Bones/Message/Fixtures
 

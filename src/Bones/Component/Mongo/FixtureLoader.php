@@ -24,11 +24,18 @@ class FixtureLoader
     protected $fixtures = array();
 
     /**
+     * @var string
+     */
+    protected $appRoot;
+
+    /**
+     * @param $appRoot
      * @param $configurationFilePath
      */
-    public function __construct($configurationFilePath)
+    public function __construct($appRoot, $configurationFilePath)
     {
         $this->parser = new Yaml();
+        $this->appRoot = $appRoot;
 
         if (!file_exists($configurationFilePath)) {
             throw new \InvalidArgumentException("File $configurationFilePath doesn't exists");
@@ -37,6 +44,7 @@ class FixtureLoader
         $configuration = $this->parser->parse(file_get_contents($configurationFilePath));
         $this->loadDatabaseConfiguration($configuration['config']);
         $this->parseFixturesFiles($configuration['config']);
+
 
     }
 
@@ -56,7 +64,7 @@ class FixtureLoader
 
         $fixtures = array();
         foreach ($configuration['fixtures']['paths'] as $fixturesPath) {
-            foreach (glob($fixturesPath . "/*yml") as $file) {
+            foreach (glob($this->appRoot . "/" . $fixturesPath . "/*yml") as $file) {
                 $fixture = $this->parser->parse(file_get_contents($file));
                 $fixtures = array_merge($fixtures, $fixture);
             }
@@ -67,35 +75,35 @@ class FixtureLoader
 
     public function run()
     {
-        $databaseConfiguration = $this->databaseConfiguration;
-
-        $client = $this->createClient($databaseConfiguration);
-        $this->insertFixtures($databaseConfiguration, $client);
+        $client = $this->createClient();
+        $this->insertFixtures($client);
     }
 
     /**
-     * @param DatabaseConfiguration $databaseConfiguration
      * @return \MongoClient
      */
-    private function createClient(DatabaseConfiguration $databaseConfiguration)
+    private function createClient()
     {
         $client = new \MongoClient(
-            $databaseConfiguration->getConnectionUrl(),
-            $databaseConfiguration->getConnectionOptions()
+            $this->databaseConfiguration->getConnectionUrl(),
+            $this->databaseConfiguration->getConnectionOptions()
         );
+
         return $client;
     }
 
     /**
-     * @param $databaseConfiguration
-     * @param $client
+     * @param \MongoClient $client
      */
-    private function insertFixtures(DatabaseConfiguration $databaseConfiguration, $client)
+    private function insertFixtures($client)
     {
+       $databaseName = $this->databaseConfiguration->getDatabaseName();
         foreach ($this->fixtures as $collection => $fixtures) {
-            $dbName = $databaseConfiguration->getDatabaseName();
-            $client->$dbName->$collection->remove(array());
-            $client->$dbName->$collection->batchInsert($fixtures);
+            echo sprintf("Adding %s fixture to the collection %s\n",
+                count($fixtures),
+                $collection);
+            $client->$databaseName->$collection->remove(array());
+            $client->$databaseName->$collection->batchInsert($fixtures);
         }
     }
 
