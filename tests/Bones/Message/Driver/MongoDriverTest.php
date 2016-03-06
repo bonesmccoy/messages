@@ -115,13 +115,20 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindAllConversationsForAGivenPerson()
     {
-        $conversations = $this->driver->findAllConversationForPerson(10);
+        $conversations = $this->driver->findAllConversationForPersonId(10);
         $this->assertEquals(
             1,
             $conversations->count()
         );
 
-        $conversations = $this->driver->findAllConversationForPerson(15);
+
+        $conversations = $this->driver->findAllConversationForPersonId(1);
+        $this->assertEquals(
+            2,
+            $conversations->count()
+        );
+
+        $conversations = $this->driver->findAllConversationForPersonId(15);
         $this->assertEquals(
             1,
             $conversations->count()

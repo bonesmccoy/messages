@@ -27,7 +27,10 @@ class Repository implements RepositoryInterface
      */
     public function getConversation($id)
     {
-        return $this->driver->findConversationById($id);
+        return $this->createConversationModel(
+            $this->driver->findConversationById($id),
+            $this->driver->findMessagesByConversationId($id)
+        );
     }
 
     /**
@@ -42,7 +45,9 @@ class Repository implements RepositoryInterface
      */
     public function getConversationMessageList(Conversation $conversation, $offset = null, $limit = null, $sorting = 'ASC')
     {
-        foreach($this->driver->findMessagesByConversationId($conversation, $offset, $limit, $sorting) as $message) {
+        foreach($this
+                    ->driver
+                    ->findMessagesByConversationId($conversation->getId(), $offset, $limit, $sorting) as $message) {
             $conversation->addMessage($message);
         }
 
@@ -57,7 +62,7 @@ class Repository implements RepositoryInterface
      */
     public function countMessages(Conversation $conversation)
     {
-        return $this->driver->countMessages($conversation);
+        return $this->driver->countMessages($conversation->getId());
     }
 
     /**
@@ -66,7 +71,7 @@ class Repository implements RepositoryInterface
      */
     public function countPeople(Conversation $conversation)
     {
-       return $this->driver->countPeople($conversation);
+       return $this->driver->countPeople($conversation->getId());
     }
 
     /**
@@ -76,10 +81,10 @@ class Repository implements RepositoryInterface
      */
     public function getPeople(Conversation $conversation)
     {
-        foreach ($this->driver->findMessagesByConversationId($conversation, null, null) as $messageEntity) {
-            $messageModel = $this->driver->createMessageModel($messageEntity, $conversation);
-            $conversation->addMessage($messageModel);
-        }
+        $conversation = $this->createConversationModel(
+            $this->driver->findConversationById($conversation->getId()),
+            $this->driver->findMessagesByConversationId($conversation->getId())
+        );
 
         return $conversation->getPersonList();
     }
@@ -96,6 +101,7 @@ class Repository implements RepositoryInterface
             new Person($messageDocument['sender']),
             $messageDocument['body']
         );
+
         $reflectionProperty = new \ReflectionProperty($message, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($message, $messageDocument['_id']);
@@ -125,10 +131,25 @@ class Repository implements RepositoryInterface
         $reflectionProperty->setAccessible(false);
 
         foreach($messageDocumentList as $messageDocument) {
-            $message = $this->createMessageModel($conversation, $messageDocument);
+            $message = $this->createMessageModel($messageDocument, $conversation);
             $conversation->addMessage($message);
         }
 
         return $conversation;
+    }
+
+
+    public function getConversationListForPerson(Person $person)
+    {
+        $conversationList = array();
+
+        foreach ($this->driver->findAllConversationForPersonId($person->getId()) as $conversationDocument) {
+            $conversationList[] = $this->createConversationModel(
+                $conversationDocument,
+                $this->driver->findMessagesByConversationId($conversationDocument["_id"])
+            );
+        }
+
+        return $conversationList;
     }
 }

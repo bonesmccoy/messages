@@ -10,18 +10,28 @@ use Bones\Message\Model\Message;
 interface DriverInterface
 {
 
+    public function findAllMessages();
+
+    public function findAllSentMessage($personId);
+
+    public function findAllReceivedMessages($personId);
+
+    public function findAllConversationForPersonId($personId);
+
+    public function findAllConversations();
+
     /**
      * @param $id
-     * @return Conversation
+     * @return array
      */
     public function findConversationById($id);
 
     /**
      * @param int $conversationId
-     * @param int $offset
-     * @param int $limit
+     * @param null $offset
+     * @param null $limit
      * @param string $sortOrder
-     * @return array
+     * @return array|\MongoCursor
      */
     public function findMessagesByConversationId($conversationId, $offset = null, $limit = null, $sortOrder = 'ASC');
 
@@ -37,9 +47,7 @@ interface DriverInterface
      */
     public function countPeople($conversationId);
 
-
     public function persistConversation(Conversation $conversation);
-
 
     public function persistMessage(Message $message);
 

@@ -121,7 +121,7 @@ class MongoDriver implements DriverInterface
                 );
     }
 
-    public function findAllConversationForPerson($personId)
+    public function findAllConversationForPersonId($personId)
     {
         $cursor =  $this->queryMessageCollection(array(
                         '$and' => array(
@@ -133,7 +133,7 @@ class MongoDriver implements DriverInterface
                                 $this->isNotDeletedByPersonId($personId)
                         )
                     ),
-                    array('conversation')
+                    array('conversation' => 1)
                 );
         $conversationIdList = array();
 
