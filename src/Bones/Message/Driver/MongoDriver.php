@@ -67,39 +67,70 @@ class MongoDriver implements DriverInterface
         return $this->getDb()->{self::MESSAGE_COLLECTION};
     }
 
+    /**
+     * @param array $query
+     * @param array $fields
+     * @return \MongoCursor
+     */
+    private function queryMessageCollection($query = array(), $fields = array())
+    {
+        return $this->getMessageCollection()->find($query, $fields);
+    }
+
+    private function queryConversationCollection($query = array(), $fields = array())
+    {
+        return $this
+            ->getConversationCollection()
+            ->find(
+                $query,
+                $fields
+            );
+    }
+
+
+    private function isNotDeletedByPersonId($personId)
+    {
+        return array('deleted.id' => array( '$ne' =>  $personId ));
+    }
+
     public function findAllMessages()
     {
-        $cursor = $this
-            ->getMessageCollection()
-            ->find();
-
-        return $cursor;
+        return $this->queryMessageCollection();
     }
 
     public function findAllSentMessage($personId)
     {
-        return $this
-            ->getMessageCollection()
-            ->find(array('sender' => $personId));
+        return $this->queryMessageCollection(
+                array('$and' => array(
+                        array('sender' => $personId),
+                        $this->isNotDeletedByPersonId($personId)
+                        )
+                    )
+                );
     }
 
     public function findAllReceivedMessages($personId)
     {
         return $this
-                ->getMessageCollection()
-                ->find(array(
-                    'recipient.id' => $personId
-                ));
+            ->queryMessageCollection(
+                array('$and' => array(
+                            array('recipient.id' => $personId),
+                            $this->isNotDeletedByPersonId($personId)
+                        )
+                     )
+                );
     }
 
     public function findAllConversationForPerson($personId)
     {
-        $cursor =  $this
-                ->getMessageCollection()
-                ->find(array(
-                    '$or' => array(
-                        array('sender' => $personId),
-                        array('recipient.id' => $personId)
+        $cursor =  $this->queryMessageCollection(array(
+                        '$and' => array(
+                                array( '$or' => array(
+                                            array('sender' => $personId),
+                                            array('recipient.id' => $personId)
+                                        )
+                                ),
+                                $this->isNotDeletedByPersonId($personId)
                         )
                     ),
                     array('conversation')
@@ -122,11 +153,7 @@ class MongoDriver implements DriverInterface
 
     public function findAllConversations()
     {
-        $cursor = $this
-            ->getConversationCollection()
-            ->find();
-
-        return $cursor;
+        return $this->queryConversationCollection();
     }
 
     /**
@@ -158,10 +185,9 @@ class MongoDriver implements DriverInterface
         $sortOrder = 'ASC'
     ) {
         $cursor = $this
-            ->getMessageCollection()
-            ->find(
-                array('conversation' => $conversationId)
-            );
+            ->queryMessageCollection(
+                        array('conversation' => $conversationId)
+                    );
 
         if ($offset) {
             $cursor->skip($offset);
@@ -173,15 +199,13 @@ class MongoDriver implements DriverInterface
         return $cursor;
     }
 
-    /**
+     /**
      * @param $conversationId
      * @return int
      */
     public function countMessages($conversationId)
     {
-        return $this
-            ->getMessageCollection()
-            ->find(
+        return $this->queryMessageCollection(
                 array('conversation' => $conversationId)
             )->count();
     }
@@ -196,8 +220,8 @@ class MongoDriver implements DriverInterface
             ->getMessageCollection()
             ->distinct('recipient.id', array('conversation' => $conversationId));
 
-        $senders = $this->
-        getMessageCollection()
+        $senders = $this
+            ->getMessageCollection()
             ->distinct("sender", array('conversation' => $conversationId));
 
         $peopleInvolvedInConversation = array_unique(
@@ -217,5 +241,7 @@ class MongoDriver implements DriverInterface
     {
         // TODO: Implement persistMessage() method.
     }
+
+
 }
 

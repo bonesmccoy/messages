@@ -34,7 +34,6 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
 
     }
 
-
     public function testReturnMessagesListByConversationId()
     {
         $messageList = $this->driver->findMessagesByConversationId(1);
@@ -80,7 +79,7 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
     {
         $messages = $this->driver->findAllMessages();
         $this->assertCount(
-            7,
+            8,
             $messages
         );
         foreach($messages as $messageDocument) {
