@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bones\Message\Driver;
+namespace Bones\Message\Driver\Mongo;
 
 
 use Bones\Message\DriverInterface;
@@ -9,7 +9,7 @@ use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
 
-class MongoDriver implements DriverInterface
+class Driver implements DriverInterface
 {
 
     const CONVERSATION_COLLECTION = 'conversations';

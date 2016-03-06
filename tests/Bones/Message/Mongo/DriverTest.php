@@ -4,9 +4,9 @@
 namespace tests\Bones\Message\Driver;
 
 
-use Bones\Message\Driver\MongoDriver;
+use Bones\Message\Driver\Mongo\Driver as MongoDriver;
 
-class MongoDriverTest extends \PHPUnit_Framework_TestCase
+class DriverTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -22,7 +22,7 @@ class MongoDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testInstance()
     {
-        $this->assertInstanceOf('\Bones\Message\Driver\MongoDriver', $this->driver);
+        $this->assertInstanceOf('\Bones\Message\Driver\Mongo\Driver', $this->driver);
     }
 
     public function testReturnConversationById()
