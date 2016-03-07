@@ -25,15 +25,6 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Bones\Message\Driver\Mongo\Driver', $this->driver);
     }
 
-    public function testReturnConversationById()
-    {
-        $conversationDocument = $this->driver->findConversationById(1);
-
-        $this->assertArrayHasKey('_id', $conversationDocument);
-        $this->assertEquals(1, $conversationDocument['_id']);
-
-    }
-
     public function testReturnMessagesListByConversationId()
     {
         $messageList = $this->driver->findMessagesByConversationId(1);

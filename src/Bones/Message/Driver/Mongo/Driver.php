@@ -179,19 +179,6 @@ class Driver implements DriverInterface
     }
 
     /**
-     * @param $id
-     * @return array
-     */
-    public function findConversationById($id)
-    {
-        $conversationDocument = $this
-            ->getConversationCollection()
-            ->findOne(QueryBuilder::Equal("_id", $id));
-
-        return $conversationDocument;
-    }
-
-    /**
      * @param int $conversationId
      * @param null $offset
      * @param null $limit

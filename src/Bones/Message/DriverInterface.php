@@ -22,12 +22,6 @@ interface DriverInterface
     public function findAllConversations();
 
     /**
-     * @param $id
-     * @return array
-     */
-    public function findConversationById($id);
-
-    /**
      * @param int $conversationId
      * @param null $offset
      * @param null $limit
