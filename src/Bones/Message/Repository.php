@@ -98,6 +98,7 @@ class Repository implements RepositoryInterface
         $message = new Message(
             $conversation,
             new Person($messageDocument['sender']),
+            $messageDocument['title'],
             $messageDocument['body']
         );
 

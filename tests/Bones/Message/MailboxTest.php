@@ -28,7 +28,16 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     {
         $person = new Person(1);
 
-        $this->mailbox->getInbox($person);
+        $inbox = $this->mailbox->getInbox($person);
+
+        $this->assertCount(
+            2,
+            $inbox
+        );
+
+        foreach($inbox as $conversation) {
+            $this->assertInstanceOf('Bones\Message\Model\Conversation', $conversation);
+        }
     }
 
 

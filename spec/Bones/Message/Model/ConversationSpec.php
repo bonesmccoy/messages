@@ -101,4 +101,25 @@ class ConversationSpec extends ObjectBehavior
         }
     }
 
+
+    function it_should_have_title_from_the_first_inserted_message()
+    {
+        $sender = new Person(1);
+        $recipient = new Person(2);
+
+        $conversation = new Conversation();
+
+        $message = new Message($conversation, $sender, 'title 1', 'body');
+        $message->addRecipient($recipient);
+        $this->addMessage($message);
+
+
+        $message = new Message($conversation, $sender, 'title 2', 'body');
+        $this->modifyMessageDate($message, new \DateTime('2016-01-01'));
+        $message->addRecipient($recipient);
+        $this->addMessage($message);
+
+        $this->getTitle()->shouldReturn("title 2");
+    }
+
 }

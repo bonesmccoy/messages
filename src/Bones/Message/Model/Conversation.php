@@ -104,4 +104,20 @@ class Conversation
         return false;
     }
 
+    public function getTitle()
+    {
+        if ($message = $this->getFirstMessage()) {
+            return $message->getTitle();
+        }
+    }
+
+    /**
+     * return Message
+     */
+    private function getFirstMessage()
+    {
+        $messageList = $this->getMessageList();
+        return array_shift(array_values($messageList));
+    }
+
 }

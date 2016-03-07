@@ -109,16 +109,18 @@ class Driver implements DriverInterface
                 );
     }
 
-    public function findAllReceivedMessages($personId)
+    public function findAllReceivedMessages($personId, $conversationIdList = array())
     {
-        return $this
-            ->queryMessageCollection(
-                array('$and' => array(
-                            array('recipient.id' => $personId),
-                            $this->messageIsNotDeletedByPersonId($personId)
-                        )
-                     )
-                );
+        $andConditions = array(
+            array('recipient.id' => $personId),
+            $this->messageIsNotDeletedByPersonId($personId)
+        );
+
+        if (!empty($conversationIdList)) {
+            $andConditions[] = QueryBuilder::GetIn('conversation', $conversationIdList);
+        }
+
+        return $this->queryMessageCollection(QueryBuilder::GetAnd($andConditions));
     }
 
     public function findAllConversationForPersonId($personId)
