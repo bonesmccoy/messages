@@ -19,8 +19,6 @@ interface DriverInterface
 
     public function findAllConversationIdForPersonId($personId, $offset = null, $limit = null);
 
-    public function findAllConversations();
-
     /**
      * @param int $conversationId
      * @param null $offset
@@ -41,8 +39,6 @@ interface DriverInterface
      * @return int
      */
     public function countPeople($conversationId);
-
-    public function persistConversation(Conversation $conversation);
 
     public function persistMessage(Message $message);
 

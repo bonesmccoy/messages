@@ -221,11 +221,6 @@ class Driver implements DriverInterface
     }
 
 
-    public function persistConversation(Conversation $conversation)
-    {
-        // TODO: Implement persistConversation() method.
-    }
-
     public function persistMessage(Message $message)
     {
         // TODO: Implement persistMessage() method.
