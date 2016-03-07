@@ -116,39 +116,40 @@ class DriverTest extends \PHPUnit_Framework_TestCase
     public function testFindAllConversationsForAGivenPerson()
     {
         $conversations = $this->driver->findAllConversationForPersonId(10);
-        $this->assertEquals(
+        $this->assertCount(
             1,
-            $conversations->count()
+            $conversations
         );
-
-
-        $conversations = $this->driver->findAllConversationForPersonId(1);
-        $this->assertEquals(
-            2,
-            $conversations->count()
-        );
-
 
         $conversations = $this->driver->findAllConversationForPersonId(15);
-        $this->assertEquals(
+        $this->assertCount(
             1,
-            $conversations->count()
+            $conversations
         );
+    }
+
+    public function testFindConversationForAGivePersonLimited()
+    {
+        $conversations = $this->driver->findAllConversationForPersonId(1, 0 ,1);
+        $this->assertCount(
+            1,
+            $conversations
+        );
+
     }
 
     public function testFindAllConversationForPersonOrderedByDateDesc()
     {
         $conversations = $this->driver->findAllConversationForPersonId(1);
-        $this->assertEquals(
+
+        $this->assertCount(
             2,
-            $conversations->count()
+            $conversations
         );
 
-        $conversationArray = iterator_to_array($conversations);
-
-        $firstConversation = current($conversationArray);
+        $firstConversation = current($conversations);
         $this->assertEquals(
-            1,
+            2,
             $firstConversation["_id"]
         );
 
@@ -177,9 +178,9 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $messages = $this
                     ->driver
                     ->findAllReceivedMessages(1);
-        $this->assertEquals(
+        $this->assertCount(
             4,
-            $messages->count()
+            $messages
         );
     }
 }

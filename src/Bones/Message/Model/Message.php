@@ -41,14 +41,16 @@ class Message
      * Message constructor.
      * @param Conversation $conversation
      * @param Person $sender
-     * @param $body
+     * @param string title
+     * @param string $body
      */
-    public function __construct(Conversation $conversation, Person $sender, $body)
+    public function __construct(Conversation $conversation, Person $sender, $title, $body)
     {
         $this->conversation = $conversation;
         $this->sender = $sender;
         $this->body = $body;
         $this->date = new \DateTime();
+        $this->title = $title;
     }
 
 
