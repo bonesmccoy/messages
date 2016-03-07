@@ -44,6 +44,7 @@ class Conversation
      */
     public function getMessageList()
     {
+        ksort($this->messageList);
         return $this->messageList;
     }
 
@@ -54,10 +55,9 @@ class Conversation
      */
     public function addMessage(Message $message)
     {
-        $this->messageList[$message->getDate()->format("Ymdhist")] = $message;
+        $this->messageList[$message->getDate()->format("Ymdhis")] = $message;
         $this->addPersonsFromMessage($message);
-
-     }
+    }
 
     /**
      * Adds all the person object involved in the message
@@ -85,4 +85,36 @@ class Conversation
             $this->personList[$person->getId()] = $person;
         }
     }
+
+    /**
+     * @param Person $person
+     * @return bool
+     */
+    public function hasUnreadMessagesForPerson(Person $person)
+    {
+        foreach($this->messageList as $message) {
+            if (!$message->isReadFromPerson($person)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getTitle()
+    {
+        if ($message = $this->getFirstMessage()) {
+            return $message->getTitle();
+        }
+    }
+
+    /**
+     * return Message
+     */
+    private function getFirstMessage()
+    {
+        $messageList = $this->getMessageList();
+        return array_shift(array_values($messageList));
+    }
+
 }

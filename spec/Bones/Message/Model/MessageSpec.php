@@ -14,7 +14,7 @@ class MessageSpec extends ObjectBehavior
     {
         $person->beADoubleOf('Bones\Message\Model\Person');
         $conversation->beADoubleOf('Bones\Message\Model\Conversation');
-        $this->beConstructedWith($conversation, $person, 'body');
+        $this->beConstructedWith($conversation, $person, 'title', 'body');
 
     }
 

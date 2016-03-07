@@ -4,7 +4,7 @@
 namespace tests\Bones\Message;
 
 
-use Bones\Message\Driver\Mongo\Driver as MongoDriver;;
+use Bones\Message\Driver\Mongo\Driver as MongoDriver;
 use Bones\Message\Model\Person;
 use Bones\Message\Repository;
 
@@ -38,7 +38,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             4,
-            $this->repository->countMessages($conversation)
+            count($conversation->getMessageList())
         );
     }
 

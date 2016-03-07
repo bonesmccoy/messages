@@ -109,19 +109,21 @@ class Driver implements DriverInterface
                 );
     }
 
-    public function findAllReceivedMessages($personId)
+    public function findAllReceivedMessages($personId, $conversationIdList = array())
     {
-        return $this
-            ->queryMessageCollection(
-                array('$and' => array(
-                            array('recipient.id' => $personId),
-                            $this->messageIsNotDeletedByPersonId($personId)
-                        )
-                     )
-                );
+        $andConditions = array(
+            array('recipient.id' => $personId),
+            $this->messageIsNotDeletedByPersonId($personId)
+        );
+
+        if (!empty($conversationIdList)) {
+            $andConditions[] = QueryBuilder::GetIn('conversation', $conversationIdList);
+        }
+
+        return $this->queryMessageCollection(QueryBuilder::GetAnd($andConditions));
     }
 
-    public function findAllConversationForPersonId($personId)
+    public function findAllConversationForPersonId($personId, $offset = null, $limit = null)
     {
 
         $senderOrRecipientQuery = QueryBuilder::GetOr(
@@ -148,6 +150,14 @@ class Driver implements DriverInterface
             ))
         );
 
+        if ($offset) {
+            $pipeline[] = array ('$skip' => $offset);
+        }
+
+        if ($limit) {
+            $pipeline[] = array('$limit' => $limit);
+        }
+
         $cursor = $this
             ->getMessageCollection()
             ->aggregate(
@@ -157,16 +167,10 @@ class Driver implements DriverInterface
                 )
             );
 
-        $conversationIdList = array();
-        if (isset($cursor['result'])) {
-            foreach($cursor['result'] as $cId) {
-                $conversationIdList[] = $cId['_id'];
-            }
-        }
 
-        return $this
-            ->getConversationCollection()
-            ->find(QueryBuilder::GetIn("_id", $conversationIdList));
+        return (isset($cursor['result'])) ? $cursor['result'] : array();
+
+
     }
 
     public function findAllConversations()
@@ -198,7 +202,7 @@ class Driver implements DriverInterface
         $conversationId,
         $offset = null,
         $limit = null,
-        $sortDateOrder = QueryBuilder::ORDER_ASC
+        $sortDateOrder = QueryBuilder::ORDER_DESC
     ) {
         $cursor = $this
             ->queryMessageCollection(
