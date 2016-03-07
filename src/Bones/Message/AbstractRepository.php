@@ -37,6 +37,19 @@ abstract class AbstractRepository
         $reflectionProperty->setValue($message, $date);
         $reflectionProperty->setAccessible(false);
 
+        if (!empty($messageDocument['deleted'])) {
+
+            $deleted = array();
+            foreach ($messageDocument['deleted'] as $id => $data) {
+               $deleted[$data['id']] = $data['date'];
+            }
+
+            $reflectionProperty = new \ReflectionProperty($message, 'deleted');
+            $reflectionProperty->setAccessible(true);
+            $reflectionProperty->setValue($message, $deleted);
+            $reflectionProperty->setAccessible(false);
+        }
+
         if (!empty($messageDocument)) {
             foreach ($messageDocument['recipient'] as $recipient) {
                 $message->addRecipient(new Person($recipient['id']));

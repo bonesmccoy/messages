@@ -33,7 +33,7 @@ class QueryBuilder
      */
     public static function NotEqual($field, $value)
     {
-        return array (self::OPERATOR_NOT_EQUAL => self::Equal($field, $value));
+        return array ($field => array(self::OPERATOR_NOT_EQUAL => $value));
     }
 
     /**

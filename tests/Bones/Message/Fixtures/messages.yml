@@ -1,5 +1,5 @@
 messages:
-    - {"_id" : 1, "conversation" : 1, "sender" : 1, "recipient" : [ {"id" : 2 }, {"id": 3 }, {"id": 4} ], 'title' : 'title 1 1', 'body' : 'body', 'date' : '2016-03-01 12:01:00' }
+    - {"_id" : 1, "conversation" : 1, "sender" : 1, "recipient" : [ {"id" : 2 }, {"id": 3 }, {"id": 4} ], "deleted": [{ "id" : 10, "date" : '2016-03-04 12:00:00' }], 'title' : 'title 1 1', 'body' : 'body', 'date' : '2016-03-01 12:01:00' }
     - {"_id" : 2, "conversation" : 1, "sender" : 2, "recipient" : [ {"id" : 1 }, {"id": 3 }, {"id": 4} ], 'title' : 'title 2 1', 'body' : 'body', 'date' : '2016-03-02 12:02:00' }
     - {"_id" : 3, "conversation" : 1, "sender" : 3, "recipient" : [ {"id" : 2 }, {"id": 1 }, {"id": 4} ], 'title' : 'title 3 1', 'body' : 'body', 'date' : '2016-03-03 12:03:00' }
     - {"_id" : 4, "conversation" : 1, "sender" : 4, "recipient" : [ {"id" : 2 }, {"id": 3 }, {"id": 1} ], 'title' : 'title 4 1', 'body' : 'body', 'date' : '2016-03-04 12:04:00' }

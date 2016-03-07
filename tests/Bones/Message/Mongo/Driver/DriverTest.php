@@ -47,6 +47,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             8,
             $messages
         );
+
         foreach($messages as $messageDocument) {
             $this->assertArrayHasKey('_id', $messageDocument);
             $this->assertArrayHasKey('sender', $messageDocument);

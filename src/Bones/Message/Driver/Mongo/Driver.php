@@ -192,7 +192,28 @@ class Driver implements DriverInterface
 
     public function persistMessage(Message $message)
     {
-        // TODO: Implement persistMessage() method.
+        $messageArray = array(
+            "sender" => $message->getSender()->getId(),
+            "date" => $message->getDate(),
+            "title" => $message->getTitle(),
+            "body" => $message->getBody(),
+            "conversation" => $message->getConversationId()
+        );
+
+        $recipients = array();
+        foreach($message->getRecipients() as $recipient) {
+            $recipients[] = $recipient->getId();
+        }
+
+        $messageArray['recipient'] = $recipients;
+
+    }
+
+    public function removeMessage(Message $message)
+    {
+        $this->getMessageCollection()->remove(
+            QueryBuilder::Equal('_id', $message->getId())
+        );
     }
 
 

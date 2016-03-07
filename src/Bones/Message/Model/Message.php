@@ -31,6 +31,9 @@ class Message
      */
     protected $readers = array();
 
+
+    protected $deleted = array();
+
     /**
      * @var Conversation
      */
@@ -61,6 +64,21 @@ class Message
     {
         return $this->id;
     }
+
+    public function getConversationId()
+    {
+        return ($this->conversation->getId()) ? $this->conversation->getId() : $this->generateConversationId();
+    }
+
+    private function generateConversationId()
+    {
+        return sprintf("%s%s%s",
+            $this->date->format("Ymdhis"),
+            ("s." . $this->sender->getId()),
+            base64_encode($this->title)
+        );
+    }
+
 
     /**
      * @return mixed
@@ -119,6 +137,14 @@ class Message
         return $this->readers;
     }
 
+    /**
+     * @return array
+     */
+    public function getDeleted()
+    {
+        return $this->deleted;
+    }
+
 
     public function markAsReadForPerson(Person $person)
     {
@@ -145,6 +171,17 @@ class Message
             unset($this->readers[$person->getId()]);
         }
     }
+
+    /**
+     * @param Person $person
+     */
+    public function markDeleteForPerson(Person $person)
+    {
+        if (!isset($this->deleted[$person->getId()])) {
+            $this->deleted[$person->getId()] = new \DateTime();
+        }
+    }
+
 
 
 }
