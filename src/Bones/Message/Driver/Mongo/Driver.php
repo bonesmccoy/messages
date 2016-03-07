@@ -191,38 +191,6 @@ class Driver implements DriverInterface
         return $cursor;
     }
 
-     /**
-     * @param $conversationId
-     * @return int
-     */
-    public function countMessages($conversationId)
-    {
-        return $this->queryMessageCollection(
-                QueryBuilder::Equal('conversation', $conversationId)
-            )->count();
-    }
-
-    /**
-     * @param $conversationId
-     * @return int
-     */
-    public function countPeople($conversationId)
-    {
-        $recipients = $this
-            ->getMessageCollection()
-            ->distinct('recipient.id', QueryBuilder::Equal('conversation', $conversationId));
-
-        $senders = $this
-            ->getMessageCollection()
-            ->distinct("sender", QueryBuilder::Equal('conversation', $conversationId));
-
-        $peopleInvolvedInConversation = array_unique(
-            array_merge($senders, $recipients)
-        );
-
-        return count($peopleInvolvedInConversation);
-    }
-
 
     public function persistMessage(Message $message)
     {

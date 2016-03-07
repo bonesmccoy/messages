@@ -28,17 +28,6 @@ interface DriverInterface
      */
     public function findMessagesByConversationId($conversationId, $offset = null, $limit = null, $sortDateOrder = QueryBuilder::ORDER_DESC);
 
-    /**
-     * @param $conversationId
-     * @return int
-     */
-    public function countMessages($conversationId);
-
-    /**
-     * @param $conversationId
-     * @return int
-     */
-    public function countPeople($conversationId);
 
     public function persistMessage(Message $message);
 

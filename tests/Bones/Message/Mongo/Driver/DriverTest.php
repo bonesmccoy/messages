@@ -40,32 +40,6 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testCountMessages()
-    {
-        $this->assertEquals(
-            4,
-            $this->driver->countMessages(1)
-        );
-
-        $this->assertEquals(
-            2,
-            $this->driver->countMessages(2)
-        );
-    }
-
-    public function testCountPeople()
-    {
-        $this->assertEquals(
-            4,
-            $this->driver->countPeople(1)
-        );
-
-        $this->assertEquals(
-            3,
-            $this->driver->countPeople(2)
-        );
-    }
-
     public function testFindAllMessages()
     {
         $messages = $this->driver->findAllMessages();
