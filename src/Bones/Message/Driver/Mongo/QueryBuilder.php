@@ -1,11 +1,18 @@
 <?php
 
 
-namespace src\Bones\Message\Driver\Mongo;
+namespace Bones\Message\Driver\Mongo;
 
 
 class QueryBuilder
 {
+
+    const OPERATOR_NOT_EQUAL = '$ne';
+    const OPERATOR_OR = '$or';
+    const OPERATOR_AND = '$and';
+    const OPERATOR_IN = '$in';
+    const OPERATOR_NOT_IN = '$nin';
+
     /**
      * @param $field
      * @param $value
@@ -23,7 +30,7 @@ class QueryBuilder
      */
     public static function NotEqual($field, $value)
     {
-        return array ('$ne' => self::Equal($field, $value));
+        return array (self::OPERATOR_NOT_EQUAL => self::Equal($field, $value));
     }
 
     /**
@@ -33,7 +40,7 @@ class QueryBuilder
     public static function GetOr($conditionList)
     {
         return array(
-            '$or' => $conditionList
+            self::OPERATOR_OR => $conditionList
         );
     }
 
@@ -44,14 +51,14 @@ class QueryBuilder
     public static function GetAnd($conditionList)
     {
         return array(
-            '$and' => $conditionList
+            self::OPERATOR_AND => $conditionList
         );
     }
 
     public static function GetIn($field, $values)
     {
         return array($field => array(
-            '$in' => $values
+            self::OPERATOR_IN => $values
         ));
 
     }
@@ -59,7 +66,7 @@ class QueryBuilder
     public static function GetNotIn($field, $values)
     {
         return array($field => array(
-            '$nin' => $values
+            self::OPERATOR_NOT_IN => $values
         ));
 
     }
