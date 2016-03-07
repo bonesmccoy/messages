@@ -153,7 +153,7 @@ class Repository implements RepositoryInterface
     {
         $conversationList = array();
 
-        foreach ($this->driver->findAllConversationForPersonId($person->getId()) as $conversationDocument) {
+        foreach ($this->driver->findAllConversationIdForPersonId($person->getId()) as $conversationDocument) {
             $conversationList[] = $this->createConversationModel(
                 $conversationDocument,
                 $this->driver->findMessagesByConversationId($conversationDocument["_id"])

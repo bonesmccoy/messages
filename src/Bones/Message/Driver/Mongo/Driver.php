@@ -54,14 +54,6 @@ class Driver implements DriverInterface
     /**
      * @return \MongoCollection
      */
-    private function getConversationCollection()
-    {
-        return $this->getDb()->{self::CONVERSATION_COLLECTION};
-    }
-
-    /**
-     * @return \MongoCollection
-     */
     private function getMessageCollection()
     {
         return $this->getDb()->{self::MESSAGE_COLLECTION};
@@ -75,16 +67,6 @@ class Driver implements DriverInterface
     private function queryMessageCollection($query = array(), $fields = array())
     {
         return $this->getMessageCollection()->find($query, $fields);
-    }
-
-    private function queryConversationCollection($query = array(), $fields = array())
-    {
-        return $this
-            ->getConversationCollection()
-            ->find(
-                $query,
-                $fields
-            );
     }
 
 
@@ -123,7 +105,7 @@ class Driver implements DriverInterface
         return $this->queryMessageCollection(QueryBuilder::GetAnd($andConditions));
     }
 
-    public function findAllConversationForPersonId($personId, $offset = null, $limit = null)
+    public function findAllConversationIdForPersonId($personId, $offset = null, $limit = null)
     {
 
         $senderOrRecipientQuery = QueryBuilder::GetOr(
@@ -171,11 +153,6 @@ class Driver implements DriverInterface
         return (isset($cursor['result'])) ? $cursor['result'] : array();
 
 
-    }
-
-    public function findAllConversations()
-    {
-        return $this->queryConversationCollection();
     }
 
     /**
