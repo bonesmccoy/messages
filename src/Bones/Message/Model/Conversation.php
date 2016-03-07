@@ -18,9 +18,6 @@ class Conversation
     protected $personList = array();
 
 
-    protected $hasUnreadMessages = false;
-
-
     /**
      * Returns the Id of the Conversation
      * @return string

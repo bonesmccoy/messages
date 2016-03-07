@@ -132,7 +132,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
     {
         $conversations = $this->driver->findAllConversationForPersonId(1, 0 ,1);
         $this->assertCount(
-            2,
+            1,
             $conversations
         );
 

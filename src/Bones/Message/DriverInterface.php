@@ -34,7 +34,7 @@ interface DriverInterface
      * @param int $sortDateOrder
      * @return array|\MongoCursor
      */
-    public function findMessagesByConversationId($conversationId, $offset = null, $limit = null, $sortDateOrder = QueryBuilder::ORDER_ASC);
+    public function findMessagesByConversationId($conversationId, $offset = null, $limit = null, $sortDateOrder = QueryBuilder::ORDER_DESC);
 
     /**
      * @param $conversationId

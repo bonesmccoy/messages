@@ -123,7 +123,7 @@ class Driver implements DriverInterface
         return $this->queryMessageCollection(QueryBuilder::GetAnd($andConditions));
     }
 
-    public function findAllConversationForPersonId($personId, $offset = null, $count = null)
+    public function findAllConversationForPersonId($personId, $offset = null, $limit = null)
     {
 
         $senderOrRecipientQuery = QueryBuilder::GetOr(
@@ -149,6 +149,14 @@ class Driver implements DriverInterface
                 "date" => array( '$first' => '$date'),
             ))
         );
+
+        if ($offset) {
+            $pipeline[] = array ('$skip' => $offset);
+        }
+
+        if ($limit) {
+            $pipeline[] = array('$limit' => $limit);
+        }
 
         $cursor = $this
             ->getMessageCollection()
@@ -194,7 +202,7 @@ class Driver implements DriverInterface
         $conversationId,
         $offset = null,
         $limit = null,
-        $sortDateOrder = QueryBuilder::ORDER_ASC
+        $sortDateOrder = QueryBuilder::ORDER_DESC
     ) {
         $cursor = $this
             ->queryMessageCollection(

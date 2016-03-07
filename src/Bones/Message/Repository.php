@@ -2,6 +2,7 @@
 
 namespace Bones\Message;
 
+use Bones\Message\Driver\Mongo\QueryBuilder;
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
@@ -27,23 +28,22 @@ class Repository implements RepositoryInterface
      */
     public function getConversation($id)
     {
+        $conversationDocument["_id"] = $id;
+
         return $this->createConversationModel(
-            $this->driver->findConversationById($id),
+            $conversationDocument,
             $this->driver->findMessagesByConversationId($id)
         );
     }
 
     /**
-     * get all messages from a Conversation
-     *
      * @param Conversation $conversation
-     * @param int $offset
-     * @param int $limit
-     * @param string $sorting
-     *
+     * @param null $offset
+     * @param null $limit
+     * @param int|string $sorting
      * @return Conversation
      */
-    public function getConversationMessageList(Conversation $conversation, $offset = null, $limit = null, $sorting = 'ASC')
+    public function getConversationMessageList(Conversation $conversation, $offset = null, $limit = null, $sorting = QueryBuilder::ORDER_DESC)
     {
         foreach($this->driver->findMessagesByConversationId($conversation->getId(), $offset, $limit, $sorting) as $message) {
             $message = $this->createMessageModel($message, $conversation);
@@ -80,8 +80,9 @@ class Repository implements RepositoryInterface
      */
     public function getPeople(Conversation $conversation)
     {
+        $conversationDocument["_id"] = $conversation->getId();
         $conversation = $this->createConversationModel(
-            $this->driver->findConversationById($conversation->getId()),
+            $conversationDocument["_id"],
             $this->driver->findMessagesByConversationId($conversation->getId())
         );
 
@@ -102,9 +103,18 @@ class Repository implements RepositoryInterface
             $messageDocument['body']
         );
 
+
+
         $reflectionProperty = new \ReflectionProperty($message, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($message, $messageDocument['_id']);
+        $reflectionProperty->setAccessible(false);
+
+
+        $reflectionProperty = new \ReflectionProperty($message, 'date');
+        $reflectionProperty->setAccessible(true);
+        $date = ($messageDocument['date'] instanceof \Datetime ) ? $messageDocument['date'] : new \DateTime($messageDocument['date']);
+        $reflectionProperty->setValue($message, $date);
         $reflectionProperty->setAccessible(false);
 
         if (!empty($messageDocument)) {

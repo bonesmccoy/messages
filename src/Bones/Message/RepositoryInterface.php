@@ -4,6 +4,7 @@
 namespace Bones\Message;
 
 
+use Bones\Message\Driver\Mongo\QueryBuilder;
 use Bones\Message\Model\Conversation;
 
 interface RepositoryInterface
@@ -22,11 +23,11 @@ interface RepositoryInterface
      * @param Conversation $conversation
      * @param int $offset
      * @param int $limit
-     * @param string $sorting
+     * @param int $sorting
      *
      * @return mixed
      */
-    public function getConversationMessageList(Conversation $conversation, $offset = null, $limit = null, $sorting = 'ASC');
+    public function getConversationMessageList(Conversation $conversation, $offset = null, $limit = null, $sorting = QueryBuilder::ORDER_DESC);
 
 
     /**
