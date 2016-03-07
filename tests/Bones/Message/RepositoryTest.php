@@ -4,7 +4,7 @@
 namespace tests\Bones\Message;
 
 
-use Bones\Message\Driver\Mongo\Driver as MongoDriver;;
+use Bones\Message\Driver\Mongo\Driver as MongoDriver;
 use Bones\Message\Model\Person;
 use Bones\Message\Repository;
 
