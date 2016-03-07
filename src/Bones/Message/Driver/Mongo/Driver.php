@@ -88,7 +88,7 @@ class Driver implements DriverInterface
     }
 
 
-    private function isNotDeletedByPersonId($personId)
+    private function messageIsNotDeletedByPersonId($personId)
     {
         return array('deleted.id' => array( '$ne' =>  $personId ));
     }
@@ -103,7 +103,7 @@ class Driver implements DriverInterface
         return $this->queryMessageCollection(
                 array('$and' => array(
                         array('sender' => $personId),
-                        $this->isNotDeletedByPersonId($personId)
+                        $this->messageIsNotDeletedByPersonId($personId)
                         )
                     )
                 );
@@ -115,7 +115,7 @@ class Driver implements DriverInterface
             ->queryMessageCollection(
                 array('$and' => array(
                             array('recipient.id' => $personId),
-                            $this->isNotDeletedByPersonId($personId)
+                            $this->messageIsNotDeletedByPersonId($personId)
                         )
                      )
                 );
@@ -134,19 +134,34 @@ class Driver implements DriverInterface
         $query = QueryBuilder::GetAnd(
             array(
                 $senderOrRecipientQuery,
-                $this->isNotDeletedByPersonId($personId)
+                $this->messageIsNotDeletedByPersonId($personId)
             )
         );
 
-        $cursor =  $this->queryMessageCollection(
-                    $query,
-                    array('conversation' => 1)
-                );
+        $pipeline = array(
+            array('$match' => $query),
+            array('$sort' => array("date" => -1 )),
+            array('$group' => array(
+                "_id" => '$conversation',
+                "title" => array( '$first' => '$title'),
+                "date" => array( '$first' => '$date'),
+            ))
+        );
+
+        $cursor = $this
+            ->getMessageCollection()
+            ->aggregate(
+                $pipeline,
+                array(
+                    "allowDiskUse" => true
+                )
+            );
 
         $conversationIdList = array();
-
-        foreach($cursor as $cId) {
-            $conversationIdList[] = $cId['conversation'];
+        if (isset($cursor['result'])) {
+            foreach($cursor['result'] as $cId) {
+                $conversationIdList[] = $cId['_id'];
+            }
         }
 
         return $this
@@ -176,14 +191,14 @@ class Driver implements DriverInterface
      * @param int $conversationId
      * @param null $offset
      * @param null $limit
-     * @param string $sortOrder
+     * @param int $sortDateOrder
      * @return array|\MongoCursor
      */
     public function findMessagesByConversationId(
         $conversationId,
         $offset = null,
         $limit = null,
-        $sortOrder = 'ASC'
+        $sortDateOrder = QueryBuilder::ORDER_ASC
     ) {
         $cursor = $this
             ->queryMessageCollection(
@@ -196,6 +211,11 @@ class Driver implements DriverInterface
         if ($limit) {
             $cursor->limit($limit);
         }
+
+        $cursor->sort(array(
+            'date' => $sortDateOrder
+        ));
+
 
         return $cursor;
     }

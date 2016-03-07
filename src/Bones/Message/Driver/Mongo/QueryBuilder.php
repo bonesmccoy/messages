@@ -13,6 +13,9 @@ class QueryBuilder
     const OPERATOR_IN = '$in';
     const OPERATOR_NOT_IN = '$nin';
 
+    const ORDER_ASC = 1;
+    const ORDER_DESC = -1;
+
     /**
      * @param $field
      * @param $value
