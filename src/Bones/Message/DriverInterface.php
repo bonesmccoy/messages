@@ -17,7 +17,7 @@ interface DriverInterface
 
     public function findAllReceivedMessages($personId, $conversationIdList = array());
 
-    public function findAllConversationForPersonId($personId);
+    public function findAllConversationForPersonId($personId, $offset = null, $limit = null);
 
     public function findAllConversations();
 

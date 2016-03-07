@@ -7,7 +7,7 @@ namespace tests\Bones\Message;
 use Bones\Message\Driver\Mongo\Driver as MongoDriver;
 use Bones\Message\Mailbox;
 use Bones\Message\Model\Person;
-use Bones\Message\Repository;
+
 
 class MailboxTest extends \PHPUnit_Framework_TestCase
 {

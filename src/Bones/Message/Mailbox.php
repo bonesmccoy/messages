@@ -27,26 +27,22 @@ class Mailbox extends Repository
      */
     public function getInbox(Person $person)
     {
+
         $conversations = $this->driver->findAllConversationForPersonId($person->getId());
-
-        $conversationList = iterator_to_array($conversations);
-
         $conversationIdList = array();
-        foreach($conversationList as $conversationDocument) {
+        foreach($conversations as $conversationDocument) {
             $conversationIdList[] = $conversationDocument["_id"];
         }
 
         $messages = $this->driver->findAllReceivedMessages($person->getId(), $conversationIdList);
 
-        $messagesByConversations = array();
-
-        foreach($messages as $message) {
-            $messagesByConversations[$message['conversation']][] = $message;
+        $messageDocumentGroupedByConversation = array();
+        foreach($messages as $messageDocument) {
+            $messageDocumentGroupedByConversation[$messageDocument['conversation']][] = $messageDocument;
         }
 
         $inboxContent = array();
-
-        foreach($messagesByConversations as $conversationId => $messageDocumentList) {
+        foreach($messageDocumentGroupedByConversation as $conversationId => $messageDocumentList) {
             $conversation = $this->createConversationModel(
                 array("_id" => $conversationId),
                 $messageDocumentList
@@ -58,7 +54,6 @@ class Mailbox extends Repository
         return $inboxContent;
 
     }
-
 
 
 }

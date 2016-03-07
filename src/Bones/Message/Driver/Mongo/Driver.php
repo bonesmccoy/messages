@@ -123,7 +123,7 @@ class Driver implements DriverInterface
         return $this->queryMessageCollection(QueryBuilder::GetAnd($andConditions));
     }
 
-    public function findAllConversationForPersonId($personId)
+    public function findAllConversationForPersonId($personId, $offset = null, $count = null)
     {
 
         $senderOrRecipientQuery = QueryBuilder::GetOr(
@@ -159,16 +159,10 @@ class Driver implements DriverInterface
                 )
             );
 
-        $conversationIdList = array();
-        if (isset($cursor['result'])) {
-            foreach($cursor['result'] as $cId) {
-                $conversationIdList[] = $cId['_id'];
-            }
-        }
 
-        return $this
-            ->getConversationCollection()
-            ->find(QueryBuilder::GetIn("_id", $conversationIdList));
+        return (isset($cursor['result'])) ? $cursor['result'] : array();
+
+
     }
 
     public function findAllConversations()
