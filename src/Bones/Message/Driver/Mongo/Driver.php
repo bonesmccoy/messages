@@ -80,29 +80,32 @@ class Driver implements DriverInterface
         return $this->queryMessageCollection();
     }
 
-    public function findAllSentMessage($personId)
+    public function findAllSentMessage($personId, $conversationIdList = array())
     {
-        return $this->queryMessageCollection(
-                array('$and' => array(
-                        array('sender' => $personId),
-                        $this->messageIsNotDeletedByPersonId($personId)
-                        )
-                    )
-                );
+        $andQuery = array(
+            array('sender' => $personId),
+            $this->messageIsNotDeletedByPersonId($personId)
+        );
+
+        if (!empty($conversationIdList)) {
+            $andQuery[] = QueryBuilder::GetIn('conversation', $conversationIdList);
+        }
+
+        return $this->queryMessageCollection(QueryBuilder::GetAnd($andQuery));
     }
 
     public function findAllReceivedMessages($personId, $conversationIdList = array())
     {
-        $andConditions = array(
+        $andQuery = array(
             array('recipient.id' => $personId),
             $this->messageIsNotDeletedByPersonId($personId)
         );
 
         if (!empty($conversationIdList)) {
-            $andConditions[] = QueryBuilder::GetIn('conversation', $conversationIdList);
+            $andQuery[] = QueryBuilder::GetIn('conversation', $conversationIdList);
         }
 
-        return $this->queryMessageCollection(QueryBuilder::GetAnd($andConditions));
+        return $this->queryMessageCollection(QueryBuilder::GetAnd($andQuery));
     }
 
     public function findAllConversationIdForPersonId($personId, $offset = null, $limit = null)

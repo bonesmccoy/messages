@@ -7,7 +7,7 @@ namespace Bones\Message;
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Person;
 
-class Mailbox extends Repository
+class Mailbox extends AbstractRepository
 {
     /**
      * @var DriverInterface
