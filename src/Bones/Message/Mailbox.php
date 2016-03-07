@@ -67,7 +67,7 @@ class Mailbox extends AbstractRepository
             $outboxContent[] = $conversation;
         }
 
-        return $outboxContent = array();
+        return $outboxContent;
 
     }
 

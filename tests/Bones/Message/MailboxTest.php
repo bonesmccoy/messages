@@ -40,6 +40,35 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testGetOutbox()
+    {
+        $person = new Person(1);
+
+        $outbox = $this->mailbox->getOutbox($person);
+
+        $this->assertCount(
+            1,
+            $outbox
+        );
+
+        foreach($outbox as $conversation) {
+            $this->assertInstanceOf('Bones\Message\Model\Conversation', $conversation);
+        }
+
+        $person = new Person(2);
+
+        $outbox = $this->mailbox->getOutbox($person);
+
+        $this->assertCount(
+            2,
+            $outbox
+        );
+
+        foreach($outbox as $conversation) {
+            $this->assertInstanceOf('Bones\Message\Model\Conversation', $conversation);
+        }
+    }
+
 
 
 }
