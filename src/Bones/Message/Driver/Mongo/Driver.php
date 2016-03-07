@@ -72,7 +72,7 @@ class Driver implements DriverInterface
 
     private function messageIsNotDeletedByPersonId($personId)
     {
-        return array('deleted.id' => array( '$ne' =>  $personId ));
+        return QueryBuilder::NotEqual('deleted.id' , $personId);
     }
 
     public function findAllMessages()
@@ -154,8 +154,6 @@ class Driver implements DriverInterface
 
 
         return (isset($cursor['result'])) ? $cursor['result'] : array();
-
-
     }
 
     /**
