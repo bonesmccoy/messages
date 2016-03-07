@@ -7,7 +7,7 @@ namespace Bones\Message\Driver\Mongo;
 use Bones\Message\DriverInterface;
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
-use Bones\Message\Model\Person;
+use Bones\Message\Driver\Mongo\QueryBuilder;
 
 class Driver implements DriverInterface
 {
@@ -88,7 +88,7 @@ class Driver implements DriverInterface
     }
 
 
-    private function isNotDeletedByPersonId($personId)
+    private function messageIsNotDeletedByPersonId($personId)
     {
         return array('deleted.id' => array( '$ne' =>  $personId ));
     }
@@ -103,7 +103,7 @@ class Driver implements DriverInterface
         return $this->queryMessageCollection(
                 array('$and' => array(
                         array('sender' => $personId),
-                        $this->isNotDeletedByPersonId($personId)
+                        $this->messageIsNotDeletedByPersonId($personId)
                         )
                     )
                 );
@@ -115,7 +115,7 @@ class Driver implements DriverInterface
             ->queryMessageCollection(
                 array('$and' => array(
                             array('recipient.id' => $personId),
-                            $this->isNotDeletedByPersonId($personId)
+                            $this->messageIsNotDeletedByPersonId($personId)
                         )
                      )
                 );
@@ -123,32 +123,50 @@ class Driver implements DriverInterface
 
     public function findAllConversationForPersonId($personId)
     {
-        $cursor =  $this->queryMessageCollection(array(
-                        '$and' => array(
-                                array( '$or' => array(
-                                            array('sender' => $personId),
-                                            array('recipient.id' => $personId)
-                                        )
-                                ),
-                                $this->isNotDeletedByPersonId($personId)
-                        )
-                    ),
-                    array('conversation' => 1)
-                );
-        $conversationIdList = array();
 
-        foreach($cursor as $cId) {
-            $conversationIdList[] = $cId['conversation'];
+        $senderOrRecipientQuery = QueryBuilder::GetOr(
+            array(
+                QueryBuilder::Equal('sender', $personId),
+                QueryBuilder::Equal('recipient.id', $personId)
+            )
+        );
+
+        $query = QueryBuilder::GetAnd(
+            array(
+                $senderOrRecipientQuery,
+                $this->messageIsNotDeletedByPersonId($personId)
+            )
+        );
+
+        $pipeline = array(
+            array('$match' => $query),
+            array('$sort' => array("date" => -1 )),
+            array('$group' => array(
+                "_id" => '$conversation',
+                "title" => array( '$first' => '$title'),
+                "date" => array( '$first' => '$date'),
+            ))
+        );
+
+        $cursor = $this
+            ->getMessageCollection()
+            ->aggregate(
+                $pipeline,
+                array(
+                    "allowDiskUse" => true
+                )
+            );
+
+        $conversationIdList = array();
+        if (isset($cursor['result'])) {
+            foreach($cursor['result'] as $cId) {
+                $conversationIdList[] = $cId['_id'];
+            }
         }
 
         return $this
             ->getConversationCollection()
-            ->find(array(
-                    '_id' => array(
-                        '$in' => $conversationIdList
-                    )
-                )
-            );
+            ->find(QueryBuilder::GetIn("_id", $conversationIdList));
     }
 
     public function findAllConversations()
@@ -164,9 +182,7 @@ class Driver implements DriverInterface
     {
         $conversationDocument = $this
             ->getConversationCollection()
-            ->findOne(
-                array('_id' => $id)
-            );
+            ->findOne(QueryBuilder::Equal("_id", $id));
 
         return $conversationDocument;
     }
@@ -175,18 +191,18 @@ class Driver implements DriverInterface
      * @param int $conversationId
      * @param null $offset
      * @param null $limit
-     * @param string $sortOrder
+     * @param int $sortDateOrder
      * @return array|\MongoCursor
      */
     public function findMessagesByConversationId(
         $conversationId,
         $offset = null,
         $limit = null,
-        $sortOrder = 'ASC'
+        $sortDateOrder = QueryBuilder::ORDER_ASC
     ) {
         $cursor = $this
             ->queryMessageCollection(
-                        array('conversation' => $conversationId)
+                        QueryBuilder::Equal('conversation', $conversationId)
                     );
 
         if ($offset) {
@@ -195,6 +211,11 @@ class Driver implements DriverInterface
         if ($limit) {
             $cursor->limit($limit);
         }
+
+        $cursor->sort(array(
+            'date' => $sortDateOrder
+        ));
+
 
         return $cursor;
     }
@@ -206,7 +227,7 @@ class Driver implements DriverInterface
     public function countMessages($conversationId)
     {
         return $this->queryMessageCollection(
-                array('conversation' => $conversationId)
+                QueryBuilder::Equal('conversation', $conversationId)
             )->count();
     }
 
@@ -218,11 +239,11 @@ class Driver implements DriverInterface
     {
         $recipients = $this
             ->getMessageCollection()
-            ->distinct('recipient.id', array('conversation' => $conversationId));
+            ->distinct('recipient.id', QueryBuilder::Equal('conversation', $conversationId));
 
         $senders = $this
             ->getMessageCollection()
-            ->distinct("sender", array('conversation' => $conversationId));
+            ->distinct("sender", QueryBuilder::Equal('conversation', $conversationId));
 
         $peopleInvolvedInConversation = array_unique(
             array_merge($senders, $recipients)

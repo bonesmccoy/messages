@@ -128,12 +128,32 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $conversations->count()
         );
 
+
         $conversations = $this->driver->findAllConversationForPersonId(15);
         $this->assertEquals(
             1,
             $conversations->count()
         );
     }
+
+    public function testFindAllConversationForPersonOrderedByDateDesc()
+    {
+        $conversations = $this->driver->findAllConversationForPersonId(1);
+        $this->assertEquals(
+            2,
+            $conversations->count()
+        );
+
+        $conversationArray = iterator_to_array($conversations);
+
+        $firstConversation = current($conversationArray);
+        $this->assertEquals(
+            1,
+            $firstConversation["_id"]
+        );
+
+    }
+
 
     public function testFindAllSentMessages()
     {
