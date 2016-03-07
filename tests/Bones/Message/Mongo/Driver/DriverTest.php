@@ -25,15 +25,6 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Bones\Message\Driver\Mongo\Driver', $this->driver);
     }
 
-    public function testReturnConversationById()
-    {
-        $conversationDocument = $this->driver->findConversationById(1);
-
-        $this->assertArrayHasKey('_id', $conversationDocument);
-        $this->assertEquals(1, $conversationDocument['_id']);
-
-    }
-
     public function testReturnMessagesListByConversationId()
     {
         $messageList = $this->driver->findMessagesByConversationId(1);
@@ -47,32 +38,6 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $this->assertArrayHasKey('title', $messageDocument);
             $this->assertArrayHasKey('body', $messageDocument);
         }
-    }
-
-    public function testCountMessages()
-    {
-        $this->assertEquals(
-            4,
-            $this->driver->countMessages(1)
-        );
-
-        $this->assertEquals(
-            2,
-            $this->driver->countMessages(2)
-        );
-    }
-
-    public function testCountPeople()
-    {
-        $this->assertEquals(
-            4,
-            $this->driver->countPeople(1)
-        );
-
-        $this->assertEquals(
-            3,
-            $this->driver->countPeople(2)
-        );
     }
 
     public function testFindAllMessages()
@@ -100,28 +65,15 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testFindAllConversations()
-    {
-        $conversations = $this->driver->findAllConversations();
-        $this->assertCount(
-            4,
-            $conversations
-        );
-
-        foreach($conversations as $conversationDocument) {
-            $this->assertArrayHasKey('_id', $conversationDocument);
-        }
-    }
-
     public function testFindAllConversationsForAGivenPerson()
     {
-        $conversations = $this->driver->findAllConversationForPersonId(10);
+        $conversations = $this->driver->findAllConversationIdForPersonId(10);
         $this->assertCount(
             1,
             $conversations
         );
 
-        $conversations = $this->driver->findAllConversationForPersonId(15);
+        $conversations = $this->driver->findAllConversationIdForPersonId(15);
         $this->assertCount(
             1,
             $conversations
@@ -130,7 +82,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindConversationForAGivePersonLimited()
     {
-        $conversations = $this->driver->findAllConversationForPersonId(1, 0 ,1);
+        $conversations = $this->driver->findAllConversationIdForPersonId(1, 0 ,1);
         $this->assertCount(
             1,
             $conversations
@@ -140,7 +92,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindAllConversationForPersonOrderedByDateDesc()
     {
-        $conversations = $this->driver->findAllConversationForPersonId(1);
+        $conversations = $this->driver->findAllConversationIdForPersonId(1);
 
         $this->assertCount(
             2,

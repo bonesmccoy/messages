@@ -54,14 +54,6 @@ class Driver implements DriverInterface
     /**
      * @return \MongoCollection
      */
-    private function getConversationCollection()
-    {
-        return $this->getDb()->{self::CONVERSATION_COLLECTION};
-    }
-
-    /**
-     * @return \MongoCollection
-     */
     private function getMessageCollection()
     {
         return $this->getDb()->{self::MESSAGE_COLLECTION};
@@ -77,16 +69,6 @@ class Driver implements DriverInterface
         return $this->getMessageCollection()->find($query, $fields);
     }
 
-    private function queryConversationCollection($query = array(), $fields = array())
-    {
-        return $this
-            ->getConversationCollection()
-            ->find(
-                $query,
-                $fields
-            );
-    }
-
 
     private function messageIsNotDeletedByPersonId($personId)
     {
@@ -98,32 +80,35 @@ class Driver implements DriverInterface
         return $this->queryMessageCollection();
     }
 
-    public function findAllSentMessage($personId)
+    public function findAllSentMessage($personId, $conversationIdList = array())
     {
-        return $this->queryMessageCollection(
-                array('$and' => array(
-                        array('sender' => $personId),
-                        $this->messageIsNotDeletedByPersonId($personId)
-                        )
-                    )
-                );
+        $andQuery = array(
+            array('sender' => $personId),
+            $this->messageIsNotDeletedByPersonId($personId)
+        );
+
+        if (!empty($conversationIdList)) {
+            $andQuery[] = QueryBuilder::GetIn('conversation', $conversationIdList);
+        }
+
+        return $this->queryMessageCollection(QueryBuilder::GetAnd($andQuery));
     }
 
     public function findAllReceivedMessages($personId, $conversationIdList = array())
     {
-        $andConditions = array(
+        $andQuery = array(
             array('recipient.id' => $personId),
             $this->messageIsNotDeletedByPersonId($personId)
         );
 
         if (!empty($conversationIdList)) {
-            $andConditions[] = QueryBuilder::GetIn('conversation', $conversationIdList);
+            $andQuery[] = QueryBuilder::GetIn('conversation', $conversationIdList);
         }
 
-        return $this->queryMessageCollection(QueryBuilder::GetAnd($andConditions));
+        return $this->queryMessageCollection(QueryBuilder::GetAnd($andQuery));
     }
 
-    public function findAllConversationForPersonId($personId, $offset = null, $limit = null)
+    public function findAllConversationIdForPersonId($personId, $offset = null, $limit = null)
     {
 
         $senderOrRecipientQuery = QueryBuilder::GetOr(
@@ -173,24 +158,6 @@ class Driver implements DriverInterface
 
     }
 
-    public function findAllConversations()
-    {
-        return $this->queryConversationCollection();
-    }
-
-    /**
-     * @param $id
-     * @return array
-     */
-    public function findConversationById($id)
-    {
-        $conversationDocument = $this
-            ->getConversationCollection()
-            ->findOne(QueryBuilder::Equal("_id", $id));
-
-        return $conversationDocument;
-    }
-
     /**
      * @param int $conversationId
      * @param null $offset
@@ -224,43 +191,6 @@ class Driver implements DriverInterface
         return $cursor;
     }
 
-     /**
-     * @param $conversationId
-     * @return int
-     */
-    public function countMessages($conversationId)
-    {
-        return $this->queryMessageCollection(
-                QueryBuilder::Equal('conversation', $conversationId)
-            )->count();
-    }
-
-    /**
-     * @param $conversationId
-     * @return int
-     */
-    public function countPeople($conversationId)
-    {
-        $recipients = $this
-            ->getMessageCollection()
-            ->distinct('recipient.id', QueryBuilder::Equal('conversation', $conversationId));
-
-        $senders = $this
-            ->getMessageCollection()
-            ->distinct("sender", QueryBuilder::Equal('conversation', $conversationId));
-
-        $peopleInvolvedInConversation = array_unique(
-            array_merge($senders, $recipients)
-        );
-
-        return count($peopleInvolvedInConversation);
-    }
-
-
-    public function persistConversation(Conversation $conversation)
-    {
-        // TODO: Implement persistConversation() method.
-    }
 
     public function persistMessage(Message $message)
     {

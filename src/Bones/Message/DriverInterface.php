@@ -13,19 +13,11 @@ interface DriverInterface
 
     public function findAllMessages();
 
-    public function findAllSentMessage($personId);
+    public function findAllSentMessage($personId, $conversationIdList = array());
 
     public function findAllReceivedMessages($personId, $conversationIdList = array());
 
-    public function findAllConversationForPersonId($personId, $offset = null, $limit = null);
-
-    public function findAllConversations();
-
-    /**
-     * @param $id
-     * @return array
-     */
-    public function findConversationById($id);
+    public function findAllConversationIdForPersonId($personId, $offset = null, $limit = null);
 
     /**
      * @param int $conversationId
@@ -36,19 +28,6 @@ interface DriverInterface
      */
     public function findMessagesByConversationId($conversationId, $offset = null, $limit = null, $sortDateOrder = QueryBuilder::ORDER_DESC);
 
-    /**
-     * @param $conversationId
-     * @return int
-     */
-    public function countMessages($conversationId);
-
-    /**
-     * @param $conversationId
-     * @return int
-     */
-    public function countPeople($conversationId);
-
-    public function persistConversation(Conversation $conversation);
 
     public function persistMessage(Message $message);
 
