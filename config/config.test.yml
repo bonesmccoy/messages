@@ -1,13 +1,5 @@
 config:
-  db:
-    db_name: messages_test
-    host: localhost
-    port: 27017
-    username: ''
-    password: ''
-    connect: true
 
-  fixtures:
-      paths:
-        - tests/Bones/Message/Fixtures
+
+
 
