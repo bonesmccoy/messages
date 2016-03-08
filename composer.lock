@@ -4,22 +4,22 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "347779d187351beb28e081488faefd05",
-    "content-hash": "8252b522105f1aaef2b6eb31accd5288",
+    "hash": "41416897ce3d84dce1c67de90c8ce19d",
+    "content-hash": "81708bdc5cb239a242fc024ea7ef2654",
     "packages": [],
     "packages-dev": [
         {
             "name": "bonesmccoy/bongo-fixture-loader",
-            "version": "dev-dev/refactoring",
+            "version": "1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bonesmccoy/bongo-fixture-loader.git",
-                "reference": "a3231a84a911e86f73ed98bac232351fa4696a24"
+                "reference": "4fcb886620a4be4b5f5406705bcf8dcf24f18b82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bonesmccoy/bongo-fixture-loader/zipball/a3231a84a911e86f73ed98bac232351fa4696a24",
-                "reference": "a3231a84a911e86f73ed98bac232351fa4696a24",
+                "url": "https://api.github.com/repos/bonesmccoy/bongo-fixture-loader/zipball/4fcb886620a4be4b5f5406705bcf8dcf24f18b82",
+                "reference": "4fcb886620a4be4b5f5406705bcf8dcf24f18b82",
                 "shasum": ""
             },
             "require": {
@@ -40,10 +40,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/bonesmccoy/bongo-fixture-loader/tree/dev/refactoring",
+                "source": "https://github.com/bonesmccoy/bongo-fixture-loader/tree/1.0",
                 "issues": "https://github.com/bonesmccoy/bongo-fixture-loader/issues"
             },
-            "time": "2016-03-08 15:42:54"
+            "time": "2016-03-08 15:55:05"
         },
         {
             "name": "doctrine/instantiator",
@@ -1390,9 +1390,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "bonesmccoy/bongo-fixture-loader": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
