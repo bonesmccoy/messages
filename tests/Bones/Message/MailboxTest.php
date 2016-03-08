@@ -4,6 +4,7 @@
 namespace tests\Bones\Message;
 
 
+use Bones\Component\Fixture\FixtureLoader;
 use Bones\Message\Mailbox;
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Person;
@@ -13,10 +14,14 @@ use Bones\Message\Driver\Mongo\Driver as MongoDriver;
 class MailboxTestAbstract extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var MongoDriver
+     * @var FixtureLoader
+     */
+    protected $fixtureLoader;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     protected $driver;
-
 
     /**
      * @var Mailbox
@@ -26,13 +31,36 @@ class MailboxTestAbstract extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $dbName = getenv('TestDbName') ? getenv('TestDbName') : 'message-test';
-        $this->driver = new MongoDriver($dbName);
-        $this->mailbox = new Mailbox($this->driver);
+        $this->fixtureLoader = FixtureLoader::factoryInMemoryFixtureLoader();
+        $this->driver = $this
+            ->getMockBuilder('Bones\Message\Driver\Mongo\Driver')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->buildMailbox($this->driver);
     }
 
     public function testGetInbox()
     {
+        $conversationIdList = array(
+            array("_id" => "1"),
+            array("_id" => "2")
+        );
+
+        $this->mockAllConversation($conversationIdList);
+
+        $loadedFixtures = $this->loadMessagesFixtures();
+        foreach($loadedFixtures['messages']  as $key => $message) {
+            if (!in_array($message['_id'], array('2', '3', '6'))){
+                unset($loadedFixtures['messages'][$key]);
+            }
+        }
+
+        $this->driver
+            ->method('findAllReceivedMessages')
+            ->willReturn(array_values($loadedFixtures['messages']));
+
+
         $person = new Person(1);
 
         $inbox = $this->mailbox->getInbox($person);
@@ -49,8 +77,22 @@ class MailboxTestAbstract extends \PHPUnit_Framework_TestCase
 
     public function testGetOutbox()
     {
-        $person = new Person(1);
+        $conversationIdList = array(
+            array("_id" => "1")
+        );
 
+        $this->mockAllConversation($conversationIdList);
+
+        $loadedFixtures = $this->loadMessagesFixtures();
+
+        foreach ($loadedFixtures['messages'] as $key => $message) {
+            if (!in_array($message['_id'], array('1'))) {
+                unset($loadedFixtures['messages'][$key]);
+            }
+        }
+        $this->mockAllSent($loadedFixtures);
+
+        $person = new Person(1);
         $outbox = $this->mailbox->getOutbox($person);
 
         $this->assertCount(
@@ -58,14 +100,33 @@ class MailboxTestAbstract extends \PHPUnit_Framework_TestCase
             $outbox
         );
 
-        foreach($outbox as $conversation) {
+        foreach ($outbox as $conversation) {
             $this->assertInstanceOf('Bones\Message\Model\Conversation', $conversation);
         }
 
+    }
+
+    public function testOutBoxForPerson2()
+    {
+
+        $conversationIdList = array(
+            array("_id" => "1"),
+            array("_id" => "6")
+        );
+
+        $this->mockAllConversation($conversationIdList);
+
+        $loadedFixtures = $this->loadMessagesFixtures();
+        foreach($loadedFixtures['messages']  as $key => $message) {
+            if (!in_array($message['_id'], array('2', '6'))){
+                unset($loadedFixtures['messages'][$key]);
+            }
+        }
+
+        $this->mockAllSent($loadedFixtures);
+
         $person = new Person(2);
-
         $outbox = $this->mailbox->getOutbox($person);
-
         $this->assertCount(
             2,
             $outbox
@@ -78,10 +139,16 @@ class MailboxTestAbstract extends \PHPUnit_Framework_TestCase
 
     public function testDeletedMessage()
     {
-        $messageDocumentList = $this->driver->findMessagesByConversationId(4);
+        $loadedFixtures = $this->loadMessagesFixtures();
+        foreach($loadedFixtures['messages']  as $key => $message) {
+            if (!in_array($message['_id'], array('8'))){
+                unset($loadedFixtures['messages'][$key]);
+            }
+        }
+
         $conversation =  $this->mailbox->createConversationModel(
             array("_id" => 4),
-            $messageDocumentList
+            $loadedFixtures['messages']
         );
 
         foreach($conversation->getMessageList() as $message) {
@@ -107,6 +174,43 @@ class MailboxTestAbstract extends \PHPUnit_Framework_TestCase
 
             }
         }
+    }
+
+    private function buildMailbox($driver)
+    {
+        $this->mailbox = new Mailbox($driver);
+    }
+
+    /**
+     * @return array
+     */
+    private function loadMessagesFixtures()
+    {
+        $this->fixtureLoader->addFixturesFromFile(
+            __DIR__ . "/Fixtures/messages.yml"
+        );
+        $loadedFixtures = $this->fixtureLoader->getLoadedFixtures();
+        return $loadedFixtures;
+    }
+
+    /**
+     * @param $loadedFixtures
+     */
+    private function mockAllSent($loadedFixtures)
+    {
+        $this->driver
+            ->method('findAllSentMessage')
+            ->willReturn(array_values($loadedFixtures['messages']));
+    }
+
+    /**
+     * @param $conversationIdList
+     */
+    private function mockAllConversation($conversationIdList)
+    {
+        $this->driver
+            ->method('findAllConversationIdForPersonId')
+            ->willReturn($conversationIdList);
     }
 
 
