@@ -1,8 +1,11 @@
 <?php
 
-namespace tests\Bones\Message\Driver;
+namespace tests\Bones\Message\Mongo\Driver;
 
 use Bones\Message\Driver\Mongo\Driver as MongoDriver;
+use Bones\Message\Model\Conversation;
+use Bones\Message\Model\Message;
+use Bones\Message\Model\Person;
 
 class DriverTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,10 +43,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
     public function testFindAllMessages()
     {
         $messages = $this->driver->findAllMessages();
-        $this->assertCount(
-            8,
-            $messages
-        );
+        $this->assertGreaterThan(0, $messages);
 
         foreach ($messages as $messageDocument) {
             $this->assertArrayHasKey('_id', $messageDocument);
@@ -127,5 +127,32 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             4,
             $messages
         );
+    }
+
+    public function testAddAndRemoveMessage()
+    {
+        $message = new Message(new Conversation(), new Person(1), 'Title Message', 'Body Message');
+
+        $messageDocument = array(
+            'sender' => $message->getSender()->getId(),
+            'date' => (array) $message->getDate(),
+            'title' => $message->getTitle(),
+            'body' => $message->getBody(),
+            'conversation' => $message->getConversationId(),
+        );
+
+        $this->driver->persistMessage($messageDocument);
+        $this->arrayHasKey($messageDocument['_id']);
+
+        $newMessageId = (string) $messageDocument['_id'];
+        $this->assertNotEmpty($newMessageId);
+
+        $persistedMessage = $this->driver->getMessageById($newMessageId);
+        $this->assertEquals($messageDocument, $persistedMessage);
+
+        $this->driver->removeMessageWithId($messageDocument['_id']);
+
+        $removedMessage = $this->driver->getMessageById($messageDocument['_id']);
+        $this->assertNull($removedMessage);
     }
 }

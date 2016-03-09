@@ -3,6 +3,7 @@
 namespace Bones\Message;
 
 use Bones\Message\Model\Conversation;
+use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
 
 class Mailbox extends AbstractRepository
@@ -95,5 +96,35 @@ class Mailbox extends AbstractRepository
         }
 
         return $messageDocumentGroupedByConversation;
+    }
+
+    public function persistMessage(Message $message)
+    {
+        $messageDocument = array(
+            'sender' => $message->getSender()->getId(),
+            'date' => (array) $message->getDate(),
+            'title' => $message->getTitle(),
+            'body' => $message->getBody(),
+            'conversation' => $message->getConversationId(),
+        );
+
+        $recipients = array();
+        foreach ($message->getRecipients() as $recipient) {
+            $recipients[] = $recipient->getId();
+        }
+
+        $this->driver->persistMessage($messageDocument);
+
+        $property = new \ReflectionProperty($message, 'id');
+        $property->setAccessible(true);
+        $property->setValue($message, (string) $messageDocument['_id']);
+        $property->setAccessible(false);
+    }
+
+    public function removeMessage(Message $message)
+    {
+        if ($message->getId() != null) {
+            $this->driver->removeMessageWithId($message->getId());
+        }
     }
 }

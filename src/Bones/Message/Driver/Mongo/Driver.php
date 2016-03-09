@@ -3,8 +3,6 @@
 namespace Bones\Message\Driver\Mongo;
 
 use Bones\Message\DriverInterface;
-use Bones\Message\Model\Conversation;
-use Bones\Message\Model\Message;
 
 class Driver implements DriverInterface
 {
@@ -68,6 +66,11 @@ class Driver implements DriverInterface
     private function messageIsNotDeletedByPersonId($personId)
     {
         return QueryBuilder::NotEqual('deleted.id', $personId);
+    }
+
+    public function getMessageById($id)
+    {
+        return $this->getMessageCollection()->findOne(QueryBuilder::Equal('_id', new \MongoId($id)));
     }
 
     public function findAllMessages()
@@ -182,28 +185,27 @@ class Driver implements DriverInterface
         return $cursor;
     }
 
-    public function persistMessage(Message $message)
+    public function persistMessage($messageDocument)
     {
-        $messageArray = array(
-            'sender' => $message->getSender()->getId(),
-            'date' => $message->getDate(),
-            'title' => $message->getTitle(),
-            'body' => $message->getBody(),
-            'conversation' => $message->getConversationId(),
-        );
-
-        $recipients = array();
-        foreach ($message->getRecipients() as $recipient) {
-            $recipients[] = $recipient->getId();
+        $hasId = !empty($messageDocument['_id']);
+        if (!$hasId) {
+            $this->getMessageCollection()
+                ->insert(
+                    $messageDocument
+                );
+        } else {
+            $this->getMessageCollection()
+                ->update(
+                    array('_id' => new \MongoId($messageDocument['_id'])),
+                    $messageDocument
+                );
         }
-
-        $messageArray['recipient'] = $recipients;
     }
 
-    public function removeMessage(Message $message)
+    public function removeMessageWithId($id)
     {
         $this->getMessageCollection()->remove(
-            QueryBuilder::Equal('_id', $message->getId())
+            QueryBuilder::Equal('_id', new \MongoId($id))
         );
     }
 }

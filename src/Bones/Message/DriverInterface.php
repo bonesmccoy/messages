@@ -3,10 +3,11 @@
 namespace Bones\Message;
 
 use Bones\Message\Driver\Mongo\QueryBuilder;
-use Bones\Message\Model\Message;
 
 interface DriverInterface
 {
+    public function getMessageById($id);
+
     public function findAllMessages();
 
     public function findAllSentMessage($personId, $conversationIdList = array());
@@ -25,5 +26,7 @@ interface DriverInterface
      */
     public function findMessagesByConversationId($conversationId, $offset = null, $limit = null, $sortDateOrder = QueryBuilder::ORDER_DESC);
 
-    public function persistMessage(Message $message);
+    public function persistMessage($messageDocument);
+
+    public function removeMessageWithId($id);
 }
