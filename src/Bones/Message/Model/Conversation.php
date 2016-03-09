@@ -43,7 +43,7 @@ class Conversation
      */
     public function getMessageList()
     {
-        krsort($this->messageList);
+        ksort($this->messageList);
 
         return $this->messageList;
     }
