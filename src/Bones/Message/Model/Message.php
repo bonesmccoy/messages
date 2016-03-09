@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Bones\Message\Model;
-
 
 class Message
 {
-
     protected $id;
 
     protected $title;
@@ -31,7 +28,6 @@ class Message
      */
     protected $readers = array();
 
-
     protected $deleted = array();
 
     /**
@@ -39,11 +35,11 @@ class Message
      */
     private $conversation;
 
-
     /**
      * Message constructor.
+     *
      * @param Conversation $conversation
-     * @param Person $sender
+     * @param Person       $sender
      * @param string title
      * @param string $body
      */
@@ -55,7 +51,6 @@ class Message
         $this->date = new \DateTime();
         $this->title = $title;
     }
-
 
     /**
      * @return mixed
@@ -72,13 +67,12 @@ class Message
 
     private function generateConversationId()
     {
-        return sprintf("%s%s%s",
-            $this->date->format("Ymdhis"),
-            ("s." . $this->sender->getId()),
+        return sprintf('%s%s%s',
+            $this->date->format('Ymdhis'),
+            ('s.'.$this->sender->getId()),
             base64_encode($this->title)
         );
     }
-
 
     /**
      * @return mixed
@@ -104,8 +98,6 @@ class Message
         return $this->date;
     }
 
-
-
     /**
      * @return Person
      */
@@ -122,12 +114,10 @@ class Message
         return $this->recipients;
     }
 
-
     public function addRecipient(Person $person)
     {
         $this->recipients[$person->getId()] = $person;
     }
-
 
     /**
      * @return Person[]
@@ -145,7 +135,6 @@ class Message
         return $this->deleted;
     }
 
-
     public function markAsReadForPerson(Person $person)
     {
         if (isset($this->recipients[$person->getId()]) &&
@@ -157,12 +146,12 @@ class Message
 
     public function isReadFromPerson(Person $person)
     {
-        return (isset($this->readers[$person->getId()]));
+        return isset($this->readers[$person->getId()]);
     }
 
     public function getReadDateForUser(Person $person)
     {
-        return  $this->isReadFromPerson($person)? $this->readers[$person->getId()] : null;
+        return  $this->isReadFromPerson($person) ? $this->readers[$person->getId()] : null;
     }
 
     public function markAsUnreadForPerson(Person $person)
@@ -181,7 +170,4 @@ class Message
             $this->deleted[$person->getId()] = new \DateTime();
         }
     }
-
-
-
 }

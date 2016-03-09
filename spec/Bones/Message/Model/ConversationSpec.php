@@ -7,11 +7,10 @@ use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
 use PhpSpec\Exception\Example\FailureException;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class ConversationSpec extends ObjectBehavior
 {
-    function it_is_initializable()
+    public function it_is_initializable()
     {
         $this->shouldHaveType('Bones\Message\Model\Conversation');
     }
@@ -25,7 +24,7 @@ class ConversationSpec extends ObjectBehavior
         $property->setAccessible(false);
     }
 
-    function it_can_add_a_message()
+    public function it_can_add_a_message()
     {
         $sender = new Person(1);
         $conversation = new Conversation();
@@ -35,7 +34,7 @@ class ConversationSpec extends ObjectBehavior
         $this->getMessageList()->shouldHaveCount(1);
     }
 
-    function it_should_add_users_from_the_inserted_message()
+    public function it_should_add_users_from_the_inserted_message()
     {
         $sender = new Person(1);
         $conversation = new Conversation();
@@ -48,18 +47,16 @@ class ConversationSpec extends ObjectBehavior
         $this->getPersonList()->shouldHaveCount(2);
     }
 
-    function it_should_have_unread_messages_for_a_given_person()
+    public function it_should_have_unread_messages_for_a_given_person()
     {
         $sender = new Person(1);
         $recipient = new Person(2);
 
         $conversation = new Conversation();
 
-
         $message = new Message($conversation, $sender, 'title 1', 'body');
         $message->addRecipient($recipient);
         $this->addMessage($message);
-
 
         $message = new Message($conversation, $sender, 'title 2', 'body');
         $message->markAsReadForPerson($sender);
@@ -74,9 +71,7 @@ class ConversationSpec extends ObjectBehavior
         $this->hasUnreadMessagesForPerson($sender)->shouldReturn(true);
     }
 
-
-
-    function it_should_have_messages_order_by_date_desc()
+    public function it_should_have_messages_order_by_date_desc()
     {
         $sender = new Person(1);
         $recipient = new Person(2);
@@ -86,7 +81,6 @@ class ConversationSpec extends ObjectBehavior
         $message = new Message($conversation, $sender, 'title 1', 'body');
         $message->addRecipient($recipient);
         $this->addMessage($message);
-
 
         $message = new Message($conversation, $sender, 'title 2', 'body');
         $this->modifyMessageDate($message, new \DateTime('2016-01-01'));
@@ -97,12 +91,11 @@ class ConversationSpec extends ObjectBehavior
         $fistMessage = array_shift(array_values($messageList));
 
         if ('title 2' !== $fistMessage->getTitle()) {
-            throw new FailureException(sprintf("failed to assert that expected %s !== %s", 'title 2', $fistMessage->getTitle()));
+            throw new FailureException(sprintf('failed to assert that expected %s !== %s', 'title 2', $fistMessage->getTitle()));
         }
     }
 
-
-    function it_should_have_title_from_the_first_inserted_message()
+    public function it_should_have_title_from_the_first_inserted_message()
     {
         $sender = new Person(1);
         $recipient = new Person(2);
@@ -113,13 +106,11 @@ class ConversationSpec extends ObjectBehavior
         $message->addRecipient($recipient);
         $this->addMessage($message);
 
-
         $message = new Message($conversation, $sender, 'title 2', 'body');
         $this->modifyMessageDate($message, new \DateTime('2016-01-01'));
         $message->addRecipient($recipient);
         $this->addMessage($message);
 
-        $this->getTitle()->shouldReturn("title 2");
+        $this->getTitle()->shouldReturn('title 2');
     }
-
 }
