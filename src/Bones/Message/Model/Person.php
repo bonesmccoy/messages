@@ -1,23 +1,18 @@
 <?php
 
-
 namespace Bones\Message\Model;
-
 
 class Person
 {
-
     /**
-     * @var integer
+     * @var int
      */
     private $id;
-
 
     public function __construct($id)
     {
         $this->id = $id;
     }
-
 
     public function getId()
     {

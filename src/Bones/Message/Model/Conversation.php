@@ -4,7 +4,6 @@ namespace Bones\Message\Model;
 
 class Conversation
 {
-
     public $id;
 
     /**
@@ -17,9 +16,9 @@ class Conversation
      */
     protected $personList = array();
 
-
     /**
-     * Returns the Id of the Conversation
+     * Returns the Id of the Conversation.
+     *
      * @return string
      */
     public function getId()
@@ -28,7 +27,7 @@ class Conversation
     }
 
     /**
-     * Returns all the person involved in this conversation
+     * Returns all the person involved in this conversation.
      *
      * @return Person[]
      */
@@ -38,30 +37,31 @@ class Conversation
     }
 
     /**
-     * Returns all the messages in this conversation
+     * Returns all the messages in this conversation.
      *
      * @return Message[]
      */
     public function getMessageList()
     {
         ksort($this->messageList);
+
         return $this->messageList;
     }
 
     /**
-     * Adds a message in this conversation
+     * Adds a message in this conversation.
      *
      * @param Message $message
      */
     public function addMessage(Message $message)
     {
-        $this->messageList[$message->getDate()->format("Ymdhis")] = $message;
+        $this->messageList[$message->getDate()->format('Ymdhis')] = $message;
         $this->addPersonsFromMessage($message);
     }
 
     /**
      * Adds all the person object involved in the message
-     * to the conversation
+     * to the conversation.
      *
      * @param Message $message
      */
@@ -69,7 +69,7 @@ class Conversation
     {
         $sender = $message->getSender();
         $this->addPersonIfNotExists($sender);
-        foreach($message->getRecipients() as $recipient) {
+        foreach ($message->getRecipients() as $recipient) {
             $this->addPersonIfNotExists($recipient);
         }
     }
@@ -88,11 +88,12 @@ class Conversation
 
     /**
      * @param Person $person
+     *
      * @return bool
      */
     public function hasUnreadMessagesForPerson(Person $person)
     {
-        foreach($this->messageList as $message) {
+        foreach ($this->messageList as $message) {
             if (!$message->isReadFromPerson($person)) {
                 return true;
             }
@@ -109,12 +110,12 @@ class Conversation
     }
 
     /**
-     * return Message
+     * return Message.
      */
     private function getFirstMessage()
     {
         $messageList = $this->getMessageList();
+
         return array_shift(array_values($messageList));
     }
-
 }

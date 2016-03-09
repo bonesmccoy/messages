@@ -1,20 +1,15 @@
 <?php
 
-
 namespace Bones\Message\Driver\Mongo;
-
 
 use Bones\Message\DriverInterface;
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
-use Bones\Message\Driver\Mongo\QueryBuilder;
 
 class Driver implements DriverInterface
 {
-
     const CONVERSATION_COLLECTION = 'conversations';
     const MESSAGE_COLLECTION = 'messages';
-
 
     /**
      * @var \MongoClient
@@ -30,16 +25,16 @@ class Driver implements DriverInterface
         $password = null,
         $connect = true
     ) {
-        $url = sprintf("mongodb://%s%s%s%s/%s",
-            !empty($username) ? "$username:" : "",
-            !empty($password) ? "$password:" : "",
+        $url = sprintf('mongodb://%s%s%s%s/%s',
+            !empty($username) ? "$username:" : '',
+            !empty($password) ? "$password:" : '',
             $host,
-            !empty($port) ? ":$port" : "",
+            !empty($port) ? ":$port" : '',
             $databaseName
         );
 
         $options = array(
-            'connect' => $connect
+            'connect' => $connect,
         );
 
         $this->client = new \MongoClient($url, $options);
@@ -62,6 +57,7 @@ class Driver implements DriverInterface
     /**
      * @param array $query
      * @param array $fields
+     *
      * @return \MongoCursor
      */
     private function queryMessageCollection($query = array(), $fields = array())
@@ -69,10 +65,9 @@ class Driver implements DriverInterface
         return $this->getMessageCollection()->find($query, $fields);
     }
 
-
     private function messageIsNotDeletedByPersonId($personId)
     {
-        return QueryBuilder::NotEqual('deleted.id' , $personId);
+        return QueryBuilder::NotEqual('deleted.id', $personId);
     }
 
     public function findAllMessages()
@@ -84,7 +79,7 @@ class Driver implements DriverInterface
     {
         $andQuery = array(
             array('sender' => $personId),
-            $this->messageIsNotDeletedByPersonId($personId)
+            $this->messageIsNotDeletedByPersonId($personId),
         );
 
         if (!empty($conversationIdList)) {
@@ -98,7 +93,7 @@ class Driver implements DriverInterface
     {
         $andQuery = array(
             array('recipient.id' => $personId),
-            $this->messageIsNotDeletedByPersonId($personId)
+            $this->messageIsNotDeletedByPersonId($personId),
         );
 
         if (!empty($conversationIdList)) {
@@ -110,33 +105,32 @@ class Driver implements DriverInterface
 
     public function findAllConversationIdForPersonId($personId, $offset = null, $limit = null)
     {
-
         $senderOrRecipientQuery = QueryBuilder::GetOr(
             array(
                 QueryBuilder::Equal('sender', $personId),
-                QueryBuilder::Equal('recipient.id', $personId)
+                QueryBuilder::Equal('recipient.id', $personId),
             )
         );
 
         $query = QueryBuilder::GetAnd(
             array(
                 $senderOrRecipientQuery,
-                $this->messageIsNotDeletedByPersonId($personId)
+                $this->messageIsNotDeletedByPersonId($personId),
             )
         );
 
         $pipeline = array(
             array('$match' => $query),
-            array('$sort' => array("date" => -1 )),
+            array('$sort' => array('date' => -1)),
             array('$group' => array(
-                "_id" => '$conversation',
-                "title" => array( '$first' => '$title'),
-                "date" => array( '$first' => '$date'),
-            ))
+                '_id' => '$conversation',
+                'title' => array('$first' => '$title'),
+                'date' => array('$first' => '$date'),
+            )),
         );
 
         if ($offset) {
-            $pipeline[] = array ('$skip' => $offset);
+            $pipeline[] = array('$skip' => $offset);
         }
 
         if ($limit) {
@@ -148,19 +142,19 @@ class Driver implements DriverInterface
             ->aggregate(
                 $pipeline,
                 array(
-                    "allowDiskUse" => true
+                    'allowDiskUse' => true,
                 )
             );
-
 
         return (isset($cursor['result'])) ? $cursor['result'] : array();
     }
 
     /**
-     * @param int $conversationId
+     * @param int  $conversationId
      * @param null $offset
      * @param null $limit
-     * @param int $sortDateOrder
+     * @param int  $sortDateOrder
+     *
      * @return array|\MongoCursor
      */
     public function findMessagesByConversationId(
@@ -182,31 +176,28 @@ class Driver implements DriverInterface
         }
 
         $cursor->sort(array(
-            'date' => $sortDateOrder
+            'date' => $sortDateOrder,
         ));
-
 
         return $cursor;
     }
 
-
     public function persistMessage(Message $message)
     {
         $messageArray = array(
-            "sender" => $message->getSender()->getId(),
-            "date" => $message->getDate(),
-            "title" => $message->getTitle(),
-            "body" => $message->getBody(),
-            "conversation" => $message->getConversationId()
+            'sender' => $message->getSender()->getId(),
+            'date' => $message->getDate(),
+            'title' => $message->getTitle(),
+            'body' => $message->getBody(),
+            'conversation' => $message->getConversationId(),
         );
 
         $recipients = array();
-        foreach($message->getRecipients() as $recipient) {
+        foreach ($message->getRecipients() as $recipient) {
             $recipients[] = $recipient->getId();
         }
 
         $messageArray['recipient'] = $recipients;
-
     }
 
     public function removeMessage(Message $message)
@@ -215,7 +206,4 @@ class Driver implements DriverInterface
             QueryBuilder::Equal('_id', $message->getId())
         );
     }
-
-
 }
-

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bones\Message;
-
 
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Person;
@@ -14,20 +12,18 @@ class Mailbox extends AbstractRepository
      */
     protected $driver;
 
-
     public function __construct(DriverInterface $driver)
     {
         $this->driver = $driver;
     }
 
-
     /**
      * @param Person $person
+     *
      * @return Conversation[]
      */
     public function getInbox(Person $person)
     {
-
         $conversationIdList = $this->fetchConversationIdListForPerson($person);
 
         $messages = $this->driver->findAllReceivedMessages($person->getId(), $conversationIdList);
@@ -35,9 +31,9 @@ class Mailbox extends AbstractRepository
         $messageDocumentGroupedByConversation = $this->groupMessagesByConversationId($messages);
 
         $inboxContent = array();
-        foreach($messageDocumentGroupedByConversation as $conversationId => $messageDocumentList) {
+        foreach ($messageDocumentGroupedByConversation as $conversationId => $messageDocumentList) {
             $conversation = $this->createConversationModel(
-                array("_id" => $conversationId),
+                array('_id' => $conversationId),
                 $messageDocumentList
             );
 
@@ -45,9 +41,7 @@ class Mailbox extends AbstractRepository
         }
 
         return $inboxContent;
-
     }
-
 
     public function getOutbox(Person $person)
     {
@@ -58,9 +52,9 @@ class Mailbox extends AbstractRepository
         $messageDocumentGroupedByConversation = $this->groupMessagesByConversationId($messages);
 
         $outboxContent = array();
-        foreach($messageDocumentGroupedByConversation as $conversationId => $messageDocumentList) {
+        foreach ($messageDocumentGroupedByConversation as $conversationId => $messageDocumentList) {
             $conversation = $this->createConversationModel(
-                array("_id" => $conversationId),
+                array('_id' => $conversationId),
                 $messageDocumentList
             );
 
@@ -68,11 +62,11 @@ class Mailbox extends AbstractRepository
         }
 
         return $outboxContent;
-
     }
 
     /**
      * @param Person $person
+     *
      * @return array
      */
     private function fetchConversationIdListForPerson(Person $person)
@@ -82,13 +76,15 @@ class Mailbox extends AbstractRepository
         $conversationIdList = array();
 
         foreach ($conversations as $conversationDocument) {
-            $conversationIdList[] = $conversationDocument["_id"];
+            $conversationIdList[] = $conversationDocument['_id'];
         }
+
         return $conversationIdList;
     }
 
     /**
      * @param $messages
+     *
      * @return array
      */
     private function groupMessagesByConversationId($messages)
@@ -97,6 +93,7 @@ class Mailbox extends AbstractRepository
         foreach ($messages as $messageDocument) {
             $messageDocumentGroupedByConversation[$messageDocument['conversation']][] = $messageDocument;
         }
+
         return $messageDocumentGroupedByConversation;
     }
 }
