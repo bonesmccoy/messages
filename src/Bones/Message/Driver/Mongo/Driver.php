@@ -197,7 +197,8 @@ class Driver implements DriverInterface
             $this->getMessageCollection()
                 ->update(
                     array('_id' => new \MongoId($messageDocument['_id'])),
-                    $messageDocument
+                    $messageDocument,
+                    array('fsync' => true)
                 );
         }
     }

@@ -43,7 +43,7 @@ class Conversation
      */
     public function getMessageList()
     {
-        ksort($this->messageList);
+        krsort($this->messageList);
 
         return $this->messageList;
     }
@@ -57,6 +57,17 @@ class Conversation
     {
         $this->messageList[$message->getDate()->format('Ymdhis')] = $message;
         $this->addPersonsFromMessage($message);
+    }
+
+    /***
+     * @param Person $sender
+     * @param $title
+     * @param $body
+     * @return Message
+     */
+    public function createReplyMessage(Person $sender, $title, $body)
+    {
+        return new Message($this, $sender, $title, $body);
     }
 
     /**
@@ -118,4 +129,6 @@ class Conversation
 
         return array_shift(array_values($messageList));
     }
+
+
 }
