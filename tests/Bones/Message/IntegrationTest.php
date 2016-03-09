@@ -35,20 +35,19 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 
     public function testAddNewMessageAndCreateAConversation()
     {
-        $person = new Person(1);
-        $conversationList = $this->mailbox->getOutbox($person);
-
+        $sender = new Person(1);
+        $conversationList = $this->mailbox->getOutbox($sender);
         $this->assertCount(0, $conversationList);
 
-        $message = new Message(new Conversation(), $person, 'first message', 'of a conversation');
-        $this->mailbox->sendMessage($message);
+        $conversation = new Conversation();
+        $message = $this->sendMessageToConversationFromSender($conversation, $sender,'first message', 'of a conversation');
 
         $this->assertNotNull($message->getId());
 
-        $conversationList = $this->mailbox->getOutbox($person);
+        $conversationList = $this->mailbox->getOutbox($sender);
         $this->assertCount(1, $conversationList);
 
-        $firstConversation = array_shift(array_values($conversationList));
+        $firstConversation = current($conversationList);
         $this->assertEquals(
             $firstConversation->getId(),
             $message->getConversationId()
@@ -61,10 +60,8 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 
         $sender = new Person(1);
         $recipient = new Person(2);
-        $message = new Message(new Conversation(), $sender, 'first message', 'of a conversation');
-        $message->addRecipient($recipient);
-
-        $this->mailbox->sendMessage($message);
+        $conversation = new Conversation();
+        $message = $this->sendMessageToConversationFromSender($conversation, $sender,'first message', 'of a conversation', array($recipient));
 
         $recipientInboxConversation = $this->mailbox->getInbox($recipient);
         $this->assertCount(
@@ -73,7 +70,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         );
 
         /** @var Conversation $firstConversation */
-        $firstConversation = array_shift(array_values($recipientInboxConversation));
+        $firstConversation = current($recipientInboxConversation);
 
         $messages = $firstConversation->getMessageList();
         $this->assertCount(
@@ -87,7 +84,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         );
 
         /** @var Message $firstMessage */
-        $firstMessage = array_shift(array_values($messages));
+        $firstMessage = current($messages);
 
         $this->assertEquals($firstMessage->getSender(), $sender);
         $this->assertEquals($firstMessage->getTitle(), $message->getTitle());
@@ -104,13 +101,10 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
     public function testSendReplyToMessage()
     {
         $neil = new Person(1);
-
         $geddy = new Person(2);
 
-        $message = new Message(new Conversation(), $neil, 'first message', 'of a conversation');
-        $this->overridePrivateProperty($message, 'date', new \DateTime('2016-01-01'));
-        $message->addRecipient($geddy);
-        $this->mailbox->sendMessage($message);
+        $conversation = new Conversation();
+        $this->sendMessageToConversationFromSender($conversation, $neil, 'first message', 'of a conversation', array($geddy), new \DateTime('2016-01-01'));
 
         $geddyInboxConversationList = $this->mailbox->getInbox($geddy);
         $this->assertCount(
@@ -124,7 +118,6 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $message = $conversation->createReplyMessage($geddy, 'reply message', 'of a conversation');
         $this->overridePrivateProperty($message, 'date', new \DateTime('2016-01-02'));
         $message->addRecipient($neil);
-
         $this->mailbox->sendMessage($message);
 
         $neilInboxConversationList = $this->mailbox->getInbox($neil);
@@ -135,7 +128,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         );
 
         /** @var Conversation $conversation */
-        $conversation = array_shift(array_values($neilInboxConversationList));
+        $conversation = current($neilInboxConversationList);
 
         $conversation = $this->mailbox->getConversation($conversation->getId());
 
@@ -174,5 +167,28 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $dateProperty->setAccessible(true);
         $dateProperty->setValue($object, $propertyValue);
         $dateProperty->setAccessible(false);
+    }
+
+    /**
+     * @param $conversation
+     * @param $sender
+     * @param $title
+     * @param $body
+     * @param array $recipientList
+     * @param null $messageDate
+     * @return Message
+     */
+    private function sendMessageToConversationFromSender($conversation, $sender, $title, $body, $recipientList = array(), $messageDate = null)
+    {
+        $messageDate = ($messageDate) ? $messageDate :  new \DateTime();
+        $message = new Message($conversation, $sender, $title, $body);
+        $this->overridePrivateProperty($message, 'date', $messageDate);
+        foreach($recipientList as $recipient) {
+            $message->addRecipient($recipient);
+        }
+
+        $this->mailbox->sendMessage($message);
+
+        return $message;
     }
 }

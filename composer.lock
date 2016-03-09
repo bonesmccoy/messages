@@ -10,16 +10,16 @@
     "packages-dev": [
         {
             "name": "bonesmccoy/bongo-fixture-loader",
-            "version": "1.0",
+            "version": "1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bonesmccoy/bongo-fixture-loader.git",
-                "reference": "4fcb886620a4be4b5f5406705bcf8dcf24f18b82"
+                "reference": "cc76f2af0eb038541b1a2a935e26859c4f84f18f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bonesmccoy/bongo-fixture-loader/zipball/4fcb886620a4be4b5f5406705bcf8dcf24f18b82",
-                "reference": "4fcb886620a4be4b5f5406705bcf8dcf24f18b82",
+                "url": "https://api.github.com/repos/bonesmccoy/bongo-fixture-loader/zipball/cc76f2af0eb038541b1a2a935e26859c4f84f18f",
+                "reference": "cc76f2af0eb038541b1a2a935e26859c4f84f18f",
                 "shasum": ""
             },
             "require": {
@@ -40,10 +40,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/bonesmccoy/bongo-fixture-loader/tree/1.0",
+                "source": "https://github.com/bonesmccoy/bongo-fixture-loader/tree/1.1",
                 "issues": "https://github.com/bonesmccoy/bongo-fixture-loader/issues"
             },
-            "time": "2016-03-08 15:55:05"
+            "time": "2016-03-09 10:08:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -1232,7 +1232,7 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
