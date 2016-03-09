@@ -21,11 +21,13 @@ class Mailbox extends AbstractRepository
     /**
      * @param Person $person
      *
-     * @return Conversation[]
+     * @param null $offset
+     * @param null $limit
+     * @return Model\Conversation[]
      */
-    public function getInbox(Person $person)
+    public function getInbox(Person $person, $offset = null, $limit = null)
     {
-        $conversationIdList = $this->fetchConversationIdListForPerson($person);
+        $conversationIdList = $this->fetchConversationIdListForPerson($person, $offset, $limit);
 
         $messages = $this->driver->findAllReceivedMessages($person->getId(), $conversationIdList);
 
@@ -44,9 +46,9 @@ class Mailbox extends AbstractRepository
         return $inboxContent;
     }
 
-    public function getOutbox(Person $person)
+    public function getOutbox(Person $person, $offset = null, $limit = null)
     {
-        $conversationIdList = $this->fetchConversationIdListForPerson($person);
+        $conversationIdList = $this->fetchConversationIdListForPerson($person, $offset, $limit);
 
         $messages = $this->driver->findAllSentMessage($person->getId(), $conversationIdList);
 
@@ -68,11 +70,13 @@ class Mailbox extends AbstractRepository
     /**
      * @param Person $person
      *
+     * @param null $offset
+     * @param null $limit
      * @return array
      */
-    private function fetchConversationIdListForPerson(Person $person)
+    private function fetchConversationIdListForPerson(Person $person, $offset = null, $limit = null)
     {
-        $conversations = $this->driver->findAllConversationIdForPersonId($person->getId());
+        $conversations = $this->driver->findAllConversationIdForPersonId($person->getId(), $offset, $limit);
 
         $conversationIdList = array();
 
