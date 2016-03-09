@@ -20,9 +20,9 @@ class Mailbox extends AbstractRepository
 
     /**
      * @param Person $person
+     * @param null   $offset
+     * @param null   $limit
      *
-     * @param null $offset
-     * @param null $limit
      * @return Model\Conversation[]
      */
     public function getInbox(Person $person, $offset = null, $limit = null)
@@ -69,9 +69,9 @@ class Mailbox extends AbstractRepository
 
     /**
      * @param Person $person
+     * @param null   $offset
+     * @param null   $limit
      *
-     * @param null $offset
-     * @param null $limit
      * @return array
      */
     private function fetchConversationIdListForPerson(Person $person, $offset = null, $limit = null)

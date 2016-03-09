@@ -28,11 +28,29 @@ abstract class AbstractRepository
         $reflectionProperty->setValue($message, $messageDocument['_id']);
         $reflectionProperty->setAccessible(false);
 
-        $reflectionProperty = new \ReflectionProperty($message, 'date');
-        $reflectionProperty->setAccessible(true);
-        $date = ($messageDocument['date'] instanceof \Datetime) ? $messageDocument['date'] : new \DateTime($messageDocument['date']);
-        $reflectionProperty->setValue($message, $date);
-        $reflectionProperty->setAccessible(false);
+        if (isset($messageDocument['date'])) {
+            $date = null;
+            if (is_array($messageDocument['date'])) {
+                $dateTimeArray = $messageDocument['date'];
+                if (!empty($dateTimeArray)) {
+                    $date = new \DateTime(
+                        $dateTimeArray['date'],
+                        new \DateTimeZone($dateTimeArray['timezone'])
+                    );
+                }
+            } elseif (($messageDocument['date'] instanceof \Datetime)) {
+                $date = $messageDocument['date'];
+            } else {
+                $date = new \DateTime($messageDocument['date']);
+            }
+
+            if ($date) {
+                $reflectionProperty = new \ReflectionProperty($message, 'date');
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($message, $date);
+                $reflectionProperty->setAccessible(false);
+            }
+        }
 
         if (!empty($messageDocument['deleted'])) {
             $deleted = array();
@@ -46,7 +64,7 @@ abstract class AbstractRepository
             $reflectionProperty->setAccessible(false);
         }
 
-        if (!empty($messageDocument)) {
+        if (isset($messageDocument['recipient'])) {
             foreach ($messageDocument['recipient'] as $recipient) {
                 $message->addRecipient(new Person($recipient['id']));
             }

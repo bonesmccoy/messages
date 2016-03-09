@@ -43,7 +43,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
     public function testFindAllMessages()
     {
         $messages = $this->driver->findAllMessages();
-        $this->assertGreaterThan(0, $messages);
+        $this->assertGreaterThan(0, $messages->count());
 
         foreach ($messages as $messageDocument) {
             $this->assertArrayHasKey('_id', $messageDocument);
