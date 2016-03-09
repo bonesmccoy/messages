@@ -1,14 +1,11 @@
 <?php
 
-
 namespace tests\Bones\Message\Driver;
-
 
 use Bones\Message\Driver\Mongo\Driver as MongoDriver;
 
 class DriverTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
      * @var MongoDriver
      */
@@ -31,7 +28,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(4, $messageList);
 
-        foreach($messageList as $messageDocument) {
+        foreach ($messageList as $messageDocument) {
             $this->assertArrayHasKey('_id', $messageDocument);
             $this->assertArrayHasKey('sender', $messageDocument);
             $this->assertArrayHasKey('recipient', $messageDocument);
@@ -48,7 +45,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $messages
         );
 
-        foreach($messages as $messageDocument) {
+        foreach ($messages as $messageDocument) {
             $this->assertArrayHasKey('_id', $messageDocument);
             $this->assertArrayHasKey('sender', $messageDocument);
             $this->assertArrayHasKey('recipient', $messageDocument);
@@ -83,12 +80,11 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindConversationForAGivePersonLimited()
     {
-        $conversations = $this->driver->findAllConversationIdForPersonId(1, 0 ,1);
+        $conversations = $this->driver->findAllConversationIdForPersonId(1, 0, 1);
         $this->assertCount(
             1,
             $conversations
         );
-
     }
 
     public function testFindAllConversationForPersonOrderedByDateDesc()
@@ -103,11 +99,9 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $firstConversation = current($conversations);
         $this->assertEquals(
             2,
-            $firstConversation["_id"]
+            $firstConversation['_id']
         );
-
     }
-
 
     public function testFindAllSentMessages()
     {
@@ -122,8 +116,6 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             2,
             $messages->count()
         );
-
-
     }
 
     public function testFindAllReceivedMessages()
