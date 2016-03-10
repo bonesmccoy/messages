@@ -135,12 +135,12 @@ class Driver implements DriverInterface
             )),
         );
 
-        if ($offset) {
-            $pipeline[] = array('$skip' => $offset);
+        if ($offset !== null) {
+            $pipeline[] = array('$skip' => (int)$offset);
         }
 
         if ($limit) {
-            $pipeline[] = array('$limit' => $limit);
+            $pipeline[] = array('$limit' => (int)$limit);
         }
 
         $cursor = $this
@@ -174,11 +174,11 @@ class Driver implements DriverInterface
                         QueryBuilder::Equal('conversation', $conversationId)
                     );
 
-        if ($offset) {
-            $cursor->skip($offset);
+        if ($offset !== null) {
+            $cursor->skip((int)$offset);
         }
         if ($limit) {
-            $cursor->limit($limit);
+            $cursor->limit((int)$limit);
         }
 
         $cursor->sort(array(
