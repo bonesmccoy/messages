@@ -80,6 +80,7 @@ class Driver implements DriverInterface
 
     public function findAllSentMessage($personId, $conversationIdList = array())
     {
+        $personId = (int) $personId;
         $andQuery = array(
             array('sender' => $personId),
             $this->messageIsNotDeletedByPersonId($personId),
@@ -94,6 +95,7 @@ class Driver implements DriverInterface
 
     public function findAllReceivedMessages($personId, $conversationIdList = array())
     {
+        $personId = (int) $personId;
         $andQuery = array(
             array('recipient.id' => $personId),
             $this->messageIsNotDeletedByPersonId($personId),
@@ -108,6 +110,7 @@ class Driver implements DriverInterface
 
     public function findAllConversationIdForPersonId($personId, $offset = null, $limit = null)
     {
+        $personId = (int) $personId;
         $senderOrRecipientQuery = QueryBuilder::GetOr(
             array(
                 QueryBuilder::Equal('sender', $personId),

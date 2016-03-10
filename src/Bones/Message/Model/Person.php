@@ -11,7 +11,7 @@ class Person
 
     public function __construct($id)
     {
-        $this->id = $id;
+        $this->id = (int) $id;
     }
 
     public function getId()

@@ -129,6 +129,4 @@ class Conversation
 
         return array_shift(array_values($messageList));
     }
-
-
 }

@@ -69,6 +69,7 @@ class Mailbox extends AbstractRepository
 
     /**
      * @param $id
+     *
      * @return Conversation
      */
     public function getConversation($id)
@@ -76,7 +77,7 @@ class Mailbox extends AbstractRepository
         $messages = $this->driver->findMessagesByConversationId($id);
 
         return $this->createConversationModel(
-            array("_id" => $id),
+            array('_id' => $id),
             $messages
         );
     }
@@ -128,10 +129,9 @@ class Mailbox extends AbstractRepository
 
         $recipients = array();
         foreach ($message->getRecipients() as $recipient) {
-            $recipients[] = array("id" => $recipient->getId());
+            $recipients[] = array('id' => $recipient->getId());
         }
         $messageDocument['recipient'] = $recipients;
-
 
         $this->driver->persistMessage($messageDocument);
 
