@@ -127,6 +127,6 @@ class Conversation
     {
         $messageList = $this->getMessageList();
 
-        return array_shift(array_values($messageList));
+        return current($messageList);
     }
 }
