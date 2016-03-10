@@ -128,11 +128,6 @@ class Driver implements DriverInterface
         $pipeline = array(
             array('$match' => $query),
             array('$sort' => array('date' => -1)),
-            array('$group' => array(
-                '_id' => '$conversation',
-                'title' => array('$first' => '$title'),
-                'date' => array('$first' => '$date'),
-            )),
         );
 
         if ($offset) {
@@ -142,6 +137,12 @@ class Driver implements DriverInterface
         if ($limit) {
             $pipeline[] = array('$limit' => $limit);
         }
+
+        $pipeline[] = array('$group' => array(
+            '_id' => '$conversation',
+            'title' => array('$first' => '$title'),
+            'date' => array('$first' => '$date'),
+        ));
 
         $cursor = $this
             ->getMessageCollection()

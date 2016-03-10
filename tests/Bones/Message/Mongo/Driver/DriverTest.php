@@ -80,11 +80,32 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindConversationForAGivePersonLimited()
     {
-        $conversations = $this->driver->findAllConversationIdForPersonId(1, 0, 1);
+        $conversations = $this->driver->findAllConversationIdForPersonId(20, 0, 2);
         $this->assertCount(
-            1,
+            2,
             $conversations
         );
+
+        foreach($conversations as $conversation) {
+            $this->assertTrue(
+                in_array($conversation['_id'], array('10','11')),
+                "{$conversation['_id']} not found in [10,11]"
+            );
+        }
+
+
+        $conversations = $this->driver->findAllConversationIdForPersonId(20, 2, 2);
+        $this->assertCount(
+            2,
+            $conversations
+        );
+
+        foreach($conversations as $conversation) {
+            $this->assertTrue(
+                in_array($conversation['_id'], array('12','13')),
+                "{$conversation['_id']} not found in [12,13]"
+            );
+        }
     }
 
     public function testFindAllConversationForPersonOrderedByDateDesc()

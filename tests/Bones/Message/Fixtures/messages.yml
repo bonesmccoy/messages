@@ -7,3 +7,10 @@ messages:
     - {"_id" : 6, "conversation" : 2, "sender" : 2, "recipient" : [ {"id" : 1 } ], 'title' : 'title 6 2', 'body' : 'body', 'date' : '2016-02-04 12:06:00' }
     - {"_id" : 7, "conversation" : 3, "sender" : 10, "recipient" : [ {"id" : 15 } ], 'title' : 'title 7 3', 'body' : 'body', 'date' : '2016-03-04 12:00:00' }
     - {"_id" : 8, "conversation" : 4, "sender" : 10, "recipient" : [ {"id" : 12 }, {"id": 3 }, {"id": 1 }, {"id" : 10} ], "deleted": [{ "id" : 3, "date" : '2016-03-04 12:05:00' }, { "id" : 1 , "date": '2016-03-04 12:00:00'}, { "id" : 10, "date" : '2016-03-04 12:00:00' } ], 'title' : 'title 8 4', 'body' : 'body', 'date' : '2016-03-04 12:00:00' }
+
+
+    # test limited conversation
+    - {"_id" : 9,  conversation : 10, sender : 20,  recipient: [{ id: 21 }], title: "1 sender 1 recipient 2 title", body: "", date: "2016-06-01"}
+    - {"_id" : 10, conversation : 11, sender : 20,  recipient: [{ id: 22 }], title: "1 sender 1 recipient 2 title", body: "", date: "2016-05-30"}
+    - {"_id" : 11, conversation : 12, sender : 20,  recipient: [{ id: 23 }], title: "1 sender 1 recipient 2 title", body: "", date: "2016-05-29" }
+    - {"_id" : 12, conversation : 13, sender : 20,  recipient: [{ id: 24 }], title: "1 sender 1 recipient 2 title", body: "", date: "2016-05-28"}
