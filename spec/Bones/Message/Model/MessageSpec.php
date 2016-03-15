@@ -19,9 +19,10 @@ class MessageSpec extends ObjectBehavior
         $this->shouldHaveType('Bones\Message\Model\Message');
     }
 
-    public function it_can_have_a_conversation()
+    public function it_can_be_constructed_with_a_conversation_id(Person $person)
     {
-        $this->setConversationId(1);
+        $this->beConstructedWith($person, 'title', 'body', 1);
+
         $this->getConversationId()->shouldReturn(1);
     }
 

@@ -41,13 +41,15 @@ class Message implements ModelInterface
      * @param Person $sender
      * @param string $title
      * @param string $body
+     * @param null $conversationId
      */
-    public function __construct(Person $sender, $title, $body)
+    public function __construct(Person $sender, $title, $body, $conversationId = null)
     {
         $this->sender = $sender;
         $this->body = $body;
         $this->date = new \DateTime();
         $this->title = $title;
+        $this->conversationId = (null === $conversationId) ? $this->generateConversationId() : $conversationId;
     }
 
 
@@ -59,17 +61,8 @@ class Message implements ModelInterface
         return $this->id;
     }
 
-    public function setConversationId($conversationId)
-    {
-        $this->conversationId = $conversationId;
-    }
-
     public function getConversationId()
     {
-        if (empty($this->conversationId)) {
-            $this->conversationId =$this->generateConversationId();
-        }
-
         return $this->conversationId;
     }
 
