@@ -21,9 +21,8 @@ class MessageSpec extends ObjectBehavior
 
     public function it_can_have_a_conversation()
     {
-        $conversation = new Conversation();
-        $this->setConversation($conversation);
-        $this->getConversation()->shouldReturn($conversation);
+        $this->setConversationId(1);
+        $this->getConversationId()->shouldReturn(1);
     }
 
     public function it_has_a_date()

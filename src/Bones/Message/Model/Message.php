@@ -31,15 +31,15 @@ class Message implements ModelInterface
     protected $deleted = array();
 
     /**
-     * @var Conversation
+     * @var int
      */
-    private $conversation;
+    private $conversationId;
 
     /**
      * Message constructor.
      *
-     * @param Person       $sender
-     * @param string title
+     * @param Person $sender
+     * @param string $title
      * @param string $body
      */
     public function __construct(Person $sender, $title, $body)
@@ -59,29 +59,18 @@ class Message implements ModelInterface
         return $this->id;
     }
 
-    /**
-     * @param Conversation $conversation
-     */
-    public function setConversation($conversation)
+    public function setConversationId($conversationId)
     {
-        $this->conversation = $conversation;
-    }
-
-    /**
-     * @return Conversation
-     */
-    public function getConversation()
-    {
-        return $this->conversation;
+        $this->conversationId = $conversationId;
     }
 
     public function getConversationId()
     {
-        if ($this->conversation && $this->conversation->getId()) {
-            return $this->conversation->getId();
-        } else {
-            return $this->generateConversationId();
+        if (empty($this->conversationId)) {
+            $this->conversationId =$this->generateConversationId();
         }
+
+        return $this->conversationId;
     }
 
     private function generateConversationId()
@@ -189,4 +178,6 @@ class Message implements ModelInterface
             $this->deleted[$person->getId()] = new \DateTime();
         }
     }
+
+
 }
