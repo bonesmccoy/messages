@@ -10,19 +10,45 @@ use PhpSpec\ObjectBehavior;
 
 class ConversationSpec extends ObjectBehavior
 {
+    public function let(Message $message)
+    {
+        $message->beADoubleOf('Bones\Message\Model\Message');
+        $message->getId()->willReturn(1);
+        $message->getConversationId()->willReturn(1);
+        $message->getTitle()->willReturn("Message Title");
+
+        $this->beConstructedWith(array($message));
+    }
+
     public function it_is_initializable()
     {
+        $this->beConstructedWith(array());
         $this->shouldHaveType('Bones\Message\Model\Conversation');
     }
 
-    private function modifyMessageDate($message, \DateTime $date)
+    public function it_has_a_title()
     {
-        $reflectionClass = new \ReflectionClass($message);
-        $property = $reflectionClass->getProperty('date');
-        $property->setAccessible(true);
-        $property->setValue($message, $date);
-        $property->setAccessible(false);
+        $this->getTitle()->shouldBeLike("Message Title");
     }
+
+    public function it_has_a_first_message()
+    {
+        $this->getFirstMessage()->shouldReturnAnInstanceOf('Bones\Message\Model\Message');
+        $message = $this->getFirstMessage()->getWrappedObject();
+        if ($this->getWrappedObject()->getId() != $message->getId()) {
+            throw new FailureException(
+                sprintf('Conversation id %s should match fist message id %s',
+                    $this->getWrappedObject()->getId(),
+                    $message->getId()
+                )
+            );
+        }
+
+        if ($message->getId() != 1) {
+            throw new FailureException('first message id doesn\'t match');
+        }
+    }
+
 
     public function it_can_add_a_message()
     {
@@ -74,11 +100,12 @@ class ConversationSpec extends ObjectBehavior
 
         $message = new Message($sender, 'title 1', 'body');
         $message->addRecipient($recipient);
+        $message->send();
         $this->addMessage($message);
 
         $message = new Message($sender, 'title 2', 'body');
-        $this->modifyMessageDate($message, new \DateTime('2016-01-01'));
         $message->addRecipient($recipient);
+        $message->send();
         $this->addMessage($message);
 
         $messageList = $this->getMessageList()->getWrappedObject();
@@ -89,20 +116,12 @@ class ConversationSpec extends ObjectBehavior
         }
     }
 
-    public function it_should_have_title_from_the_first_inserted_message()
+    private function modifyMessageDate($message, \DateTime $date)
     {
-        $sender = new Person(1);
-        $recipient = new Person(2);
-
-        $message = new Message($sender, 'title 1', 'body');
-        $message->addRecipient($recipient);
-        $this->addMessage($message);
-
-        $message = new Message($sender, 'title 2', 'body');
-        $this->modifyMessageDate($message, new \DateTime('2016-01-01'));
-        $message->addRecipient($recipient);
-        $this->addMessage($message);
-
-        $this->getTitle()->shouldReturn('title 2');
+        $reflectionClass = new \ReflectionClass($message);
+        $property = $reflectionClass->getProperty('sentDate');
+        $property->setAccessible(true);
+        $property->setValue($message, $date);
+        $property->setAccessible(false);
     }
 }

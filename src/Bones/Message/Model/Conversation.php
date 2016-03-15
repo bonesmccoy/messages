@@ -4,8 +4,6 @@ namespace Bones\Message\Model;
 
 class Conversation implements ModelInterface
 {
-    public $id;
-
     /**
      * @var Message[]
      */
@@ -16,6 +14,34 @@ class Conversation implements ModelInterface
      */
     protected $personList = array();
 
+    /** @var  Message */
+    protected $firstMessage;
+
+    /** @var  string */
+    protected $title;
+
+    /**
+     * @param  Message[] $messageList
+     */
+    public function __construct($messageList)
+    {
+        if (empty($messageList)) {
+            throw new \LogicException("Conversation must be costructed with at least one message");
+        }
+
+        foreach($messageList as $message) {
+            if ($message->getId() == $message->getConversationId()) {
+                $this->title = $message->getTitle();
+                $this->firstMessage = $message;
+                break;
+            }
+        }
+
+        if (!($this->firstMessage instanceof Message)) {
+            throw new \InvalidArgumentException('Message List doesn\'t contain the first message of a conversation');
+        }
+    }
+
     /**
      * Returns the Id of the Conversation.
      *
@@ -23,7 +49,7 @@ class Conversation implements ModelInterface
      */
     public function getId()
     {
-        return $this->id;
+        return $this->firstMessage->getId();
     }
 
     /**
@@ -35,6 +61,15 @@ class Conversation implements ModelInterface
     {
         return $this->personList;
     }
+
+    /**
+     * @return Message
+     */
+    public function getFirstMessage()
+    {
+        return $this->firstMessage;
+    }
+
 
     /**
      * Returns all the messages in this conversation.
@@ -55,7 +90,7 @@ class Conversation implements ModelInterface
      */
     public function addMessage(Message $message)
     {
-        $this->messageList[$message->getDate()->format('Ymdhis')] = $message;
+        $this->messageList[$message->getSentDate()->format('Ymdhis')] = $message;
         $this->addPersonsFromMessage($message);
     }
 
@@ -122,13 +157,4 @@ class Conversation implements ModelInterface
         }
     }
 
-    /**
-     * return Message.
-     */
-    private function getFirstMessage()
-    {
-        $messageList = $this->getMessageList();
-
-        return current($messageList);
-    }
 }
