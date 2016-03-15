@@ -152,7 +152,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function testAddAndRemoveMessage()
     {
-        $message = new Message(new Conversation(), new Person(1), 'Title Message', 'Body Message');
+        $message = new Message(new Person(1), 'Title Message', 'Body Message');
 
         $messageDocument = array(
             'sender' => $message->getSender()->getId(),

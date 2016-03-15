@@ -2,7 +2,7 @@
 
 namespace Bones\Message\Model;
 
-class Person
+class Person implements ModelInterface
 {
     /**
      * @var int

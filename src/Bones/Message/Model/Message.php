@@ -2,7 +2,7 @@
 
 namespace Bones\Message\Model;
 
-class Message
+class Message implements ModelInterface
 {
     protected $id;
 
@@ -31,26 +31,27 @@ class Message
     protected $deleted = array();
 
     /**
-     * @var Conversation
+     * @var int
      */
-    private $conversation;
+    private $conversationId;
 
     /**
      * Message constructor.
      *
-     * @param Conversation $conversation
-     * @param Person       $sender
-     * @param string title
+     * @param Person $sender
+     * @param string $title
      * @param string $body
+     * @param null $conversationId
      */
-    public function __construct(Conversation $conversation, Person $sender, $title, $body)
+    public function __construct(Person $sender, $title, $body, $conversationId = null)
     {
-        $this->conversation = $conversation;
         $this->sender = $sender;
         $this->body = $body;
         $this->date = new \DateTime();
         $this->title = $title;
+        $this->conversationId = (null === $conversationId) ? $this->generateConversationId() : $conversationId;
     }
+
 
     /**
      * @return mixed
@@ -62,7 +63,7 @@ class Message
 
     public function getConversationId()
     {
-        return ($this->conversation->getId()) ? $this->conversation->getId() : $this->generateConversationId();
+        return $this->conversationId;
     }
 
     private function generateConversationId()
@@ -170,4 +171,6 @@ class Message
             $this->deleted[$person->getId()] = new \DateTime();
         }
     }
+
+
 }
