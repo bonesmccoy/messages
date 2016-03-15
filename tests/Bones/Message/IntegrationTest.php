@@ -8,6 +8,8 @@ use Bones\Message\Mailbox;
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
+use Bones\Message\Service\ConversationTransformer;
+use Bones\Message\Service\MessageTransformer;
 
 class IntegrationTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,7 +27,9 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
     {
         $dbName = 'integration-test';
         $this->driver = new Driver($dbName);
-        $this->mailbox = new Mailbox($this->driver);
+        $messageTransformer = new MessageTransformer();
+        $conversationTransformer = new ConversationTransformer();
+        $this->mailbox = new Mailbox($this->driver, $conversationTransformer, $messageTransformer);
         $mongoDataStore = new MongoDataStore(
             array('mongo_data_store' => array('db_name' => $dbName))
         );

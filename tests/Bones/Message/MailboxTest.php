@@ -5,6 +5,8 @@ namespace tests\Bones\Message;
 use Bones\Component\Fixture\FixtureLoader;
 use Bones\Message\Mailbox;
 use Bones\Message\Model\Person;
+use Bones\Message\Service\ConversationTransformer;
+use Bones\Message\Service\MessageTransformer;
 
 class MailboxTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +34,9 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->buildMailbox($this->driver);
+        $messageTransformer = new MessageTransformer();
+        $conversationTransformer = new ConversationTransformer();
+        $this->buildMailbox($this->driver, $conversationTransformer, $messageTransformer);
     }
 
     public function testGetInbox()
@@ -167,9 +171,9 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    private function buildMailbox($driver)
+    private function buildMailbox($driver, $conversationTransformer, $messageTransformer)
     {
-        $this->mailbox = new Mailbox($driver);
+        $this->mailbox = new Mailbox($driver, $conversationTransformer, $messageTransformer);
     }
 
     /**

@@ -5,17 +5,35 @@ namespace Bones\Message;
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
+use Bones\Message\Service\ConversationTransformer;
+use Bones\Message\Service\MessageTransformer;
 
-class Mailbox extends AbstractRepository
+class Mailbox
 {
     /**
      * @var DriverInterface
      */
     protected $driver;
+    /**
+     * @var ConversationTransformer
+     */
+    private $conversationTransformer;
+    /**
+     * @var MessageTransformer
+     */
+    private $messageTransformer;
 
-    public function __construct(DriverInterface $driver)
+    /**
+     * Mailbox constructor.
+     * @param DriverInterface $driver
+     * @param ConversationTransformer $conversationTransformer
+     * @param MessageTransformer $messageTransformer
+     */
+    public function __construct(DriverInterface $driver, ConversationTransformer $conversationTransformer, MessageTransformer $messageTransformer)
     {
         $this->driver = $driver;
+        $this->conversationTransformer = $conversationTransformer;
+        $this->messageTransformer = $messageTransformer;
     }
 
     /**
@@ -146,5 +164,34 @@ class Mailbox extends AbstractRepository
         if ($message->getId() != null) {
             $this->driver->removeMessageWithId($message->getId());
         }
+    }
+
+    /**
+     * @param $messageDocument
+     *
+     * @return Message
+     */
+    public function createMessageModel($messageDocument)
+    {
+        return $this->messageTransformer->fromDocumentToModel($messageDocument);
+    }
+
+    /**
+     * @param $conversationDocument
+     * @param array $messageDocumentList
+     *
+     * @return Conversation
+     */
+    public function createConversationModel($conversationDocument, $messageDocumentList = array())
+    {
+        $conversation = $this->conversationTransformer->fromDocumentToModel($conversationDocument);
+
+        foreach ($messageDocumentList as $messageDocument) {
+            $messageDocument['conversation'] = $conversation->getId();
+            $message = $this->messageTransformer->fromDocumentToModel($messageDocument);
+            $conversation->addMessage($message);
+        }
+
+        return $conversation;
     }
 }
