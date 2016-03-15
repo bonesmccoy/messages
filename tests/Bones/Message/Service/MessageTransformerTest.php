@@ -84,6 +84,7 @@ MSG;
             1,
             $message->getReaders()
         );
+
         foreach ($message->getReaders() as $personId => $readAction) {
             $this->assertInstanceOf('Bones\Message\Model\MessageAction', $readAction);
             $this->assertTrue($readAction->isRead());

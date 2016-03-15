@@ -121,7 +121,7 @@ class Mailbox
     {
         $messageDocumentGroupedByConversation = array();
         foreach ($messages as $messageDocument) {
-            $messageDocumentGroupedByConversation[$messageDocument['conversation']][] = $messageDocument;
+            $messageDocumentGroupedByConversation[$messageDocument['conversationId']][] = $messageDocument;
         }
 
         return $messageDocumentGroupedByConversation;
