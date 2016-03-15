@@ -156,7 +156,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         $messageDocument = array(
             'sender' => $message->getSender()->getId(),
-            'date' => (array) $message->getDate(),
+            'date' => (array) $message->getSentDate(),
             'title' => $message->getTitle(),
             'body' => $message->getBody(),
             'conversation' => $message->getConversationId(),

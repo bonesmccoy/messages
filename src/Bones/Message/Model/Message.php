@@ -4,6 +4,9 @@ namespace Bones\Message\Model;
 
 class Message implements ModelInterface
 {
+    const STATUS_DRAFT = 'draft';
+    const STATUS_SENT = 'sent';
+
     protected $id;
 
     protected $title;
@@ -13,27 +16,28 @@ class Message implements ModelInterface
     /** @var Person  */
     protected $sender;
 
-    /**
-     * @var \DateTime
-     */
-    private $date;
+    /** @var string  */
+    protected $status;
 
-    /**
-     * @var Person[]
-     */
+
+
+    /** @var Person */
     protected $recipients = array();
 
-    /**
-     * @var Person[]
-     */
+    /** @var MessageAction[] */
     protected $readers = array();
 
+    /** @var MessageAction[] */
     protected $deleted = array();
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $conversationId;
+
+    /** @var  \DateTime */
+    private $createdAt;
+
+    /** @var \DateTime  */
+    private $sentDate;
 
     /**
      * Message constructor.
@@ -47,9 +51,10 @@ class Message implements ModelInterface
     {
         $this->sender = $sender;
         $this->body = $body;
-        $this->date = new \DateTime();
+        $this->sentDate = new \DateTime();
         $this->title = $title;
-        $this->conversationId = (null === $conversationId) ? $this->generateConversationId() : $conversationId;
+        $this->status = self::STATUS_DRAFT;
+        $this->conversationId = $conversationId;
     }
 
 
@@ -64,15 +69,6 @@ class Message implements ModelInterface
     public function getConversationId()
     {
         return $this->conversationId;
-    }
-
-    private function generateConversationId()
-    {
-        return sprintf('%s%s%s',
-            $this->date->format('Ymdhis'),
-            ('s.'.$this->sender->getId()),
-            base64_encode($this->title)
-        );
     }
 
     /**
@@ -94,10 +90,19 @@ class Message implements ModelInterface
     /**
      * @return \DateTime
      */
-    public function getDate()
+    public function getSentDate()
     {
-        return $this->date;
+        return $this->sentDate;
     }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
 
     /**
      * @return Person
@@ -138,10 +143,11 @@ class Message implements ModelInterface
 
     public function markAsReadForPerson(Person $person)
     {
+        $action = MessageAction::factoryReadAction($person);
         if (isset($this->recipients[$person->getId()]) &&
             !isset($this->readers[$person->getId()])
         ) {
-            $this->readers[$person->getId()] = new \DateTime();
+            $this->readers[$person->getId()] = $action;
         }
     }
 
@@ -152,7 +158,7 @@ class Message implements ModelInterface
 
     public function getReadDateForUser(Person $person)
     {
-        return  $this->isReadFromPerson($person) ? $this->readers[$person->getId()] : null;
+        return  $this->isReadFromPerson($person) ? $this->readers[$person->getId()]->getDate() : null;
     }
 
     public function markAsUnreadForPerson(Person $person)
@@ -167,10 +173,27 @@ class Message implements ModelInterface
      */
     public function markDeleteForPerson(Person $person)
     {
+        $action = MessageAction::factoryDeleteAction($person);
         if (!isset($this->deleted[$person->getId()])) {
-            $this->deleted[$person->getId()] = new \DateTime();
+            $this->deleted[$person->getId()] = $action;
         }
     }
 
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function send()
+    {
+        if (empty($this->recipients)) {
+            throw new \LogicException("Cannot send message without recipients");
+        }
+
+        if ($this->status == self::STATUS_DRAFT) {
+            $this->status = self::STATUS_SENT;
+            $this->sentDate = new \DateTime();
+        }
+    }
 
 }

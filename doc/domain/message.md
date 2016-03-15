@@ -7,6 +7,7 @@ Structure
 ```
 {
     "id" : int,
+    "status": draft | sent,
     "parentId" : int|null,
     "senderId" : int,
     "recipientList" : [ 
@@ -27,7 +28,7 @@ Structure
     ],
     "title" : "title 1 1",
     "body" : "body",
-    "createdDate" : DateTime,
-    "sentDate" : DateTime
+    "createdAt" : DateTime,
+    "sentAt" : DateTime
 }
 ```

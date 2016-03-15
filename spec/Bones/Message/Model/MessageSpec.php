@@ -26,9 +26,9 @@ class MessageSpec extends ObjectBehavior
         $this->getConversationId()->shouldReturn(1);
     }
 
-    public function it_has_a_date()
+    public function it_has_status_draft()
     {
-        $this->getDate()->shouldReturnAnInstanceOf('\DateTime');
+        $this->getStatus()->shouldBeLike('draft');
     }
 
     public function it_should_add_recipient()
@@ -55,6 +55,20 @@ class MessageSpec extends ObjectBehavior
         $this->addRecipient($person);
         $this->addRecipient($person);
         $this->getRecipients()->shouldHaveCount(1);
+    }
+
+    public function it_cannot_be_sent_is_recipient_list_is_empty()
+    {
+        $this->shouldThrow('\LogicException')->duringSend();
+    }
+
+    public function it_can_be_sent_if_it_has_recipients()
+    {
+        $person = new Person(3);
+        $this->addRecipient($person);
+
+        $this->send();
+        $this->getSentDate()->shouldReturnAnInstanceOf('\DateTime');
     }
 
     public function it_can_be_marked_as_read()
