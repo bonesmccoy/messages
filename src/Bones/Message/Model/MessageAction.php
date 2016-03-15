@@ -14,10 +14,13 @@ class MessageAction
 
     protected $type;
 
+    protected $performer;
+
     private function __construct($type, Person $actionPerformer)
     {
         $this->type = $type;
         $this->date = new \DateTime();
+        $this->performer = $actionPerformer;
     }
 
     public static function factoryDeleteAction(Person $person)
@@ -47,5 +50,16 @@ class MessageAction
     {
         return $this->date;
     }
+
+    /**
+     * @return Person
+     */
+    public function getPerformer()
+    {
+        return $this->performer;
+    }
+
+
+
 
 }

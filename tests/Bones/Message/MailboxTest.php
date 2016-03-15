@@ -35,8 +35,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $messageTransformer = new MessageTransformer();
-        $conversationTransformer = new ConversationTransformer();
-        $this->buildMailbox($this->driver, $conversationTransformer, $messageTransformer);
+        $this->buildMailbox($this->driver,$messageTransformer);
     }
 
     public function testGetInbox()
@@ -171,9 +170,9 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    private function buildMailbox($driver, $conversationTransformer, $messageTransformer)
+    private function buildMailbox($driver, $messageTransformer)
     {
-        $this->mailbox = new Mailbox($driver, $conversationTransformer, $messageTransformer);
+        $this->mailbox = new Mailbox($driver, $messageTransformer);
     }
 
     /**

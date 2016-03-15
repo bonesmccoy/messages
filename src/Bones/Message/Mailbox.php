@@ -14,10 +14,7 @@ class Mailbox
      * @var DriverInterface
      */
     protected $driver;
-    /**
-     * @var ConversationTransformer
-     */
-    private $conversationTransformer;
+
     /**
      * @var MessageTransformer
      */
@@ -26,13 +23,11 @@ class Mailbox
     /**
      * Mailbox constructor.
      * @param DriverInterface $driver
-     * @param ConversationTransformer $conversationTransformer
      * @param MessageTransformer $messageTransformer
      */
-    public function __construct(DriverInterface $driver, ConversationTransformer $conversationTransformer, MessageTransformer $messageTransformer)
+    public function __construct(DriverInterface $driver, MessageTransformer $messageTransformer)
     {
         $this->driver = $driver;
-        $this->conversationTransformer = $conversationTransformer;
         $this->messageTransformer = $messageTransformer;
     }
 
@@ -54,7 +49,6 @@ class Mailbox
         $inboxContent = array();
         foreach ($messageDocumentGroupedByConversation as $conversationId => $messageDocumentList) {
             $conversation = $this->createConversationModel(
-                array('_id' => $conversationId),
                 $messageDocumentList
             );
 
@@ -75,7 +69,6 @@ class Mailbox
         $outboxContent = array();
         foreach ($messageDocumentGroupedByConversation as $conversationId => $messageDocumentList) {
             $conversation = $this->createConversationModel(
-                array('_id' => $conversationId),
                 $messageDocumentList
             );
 
@@ -95,7 +88,6 @@ class Mailbox
         $messages = $this->driver->findMessagesByConversationId($id);
 
         return $this->createConversationModel(
-            array('_id' => $id),
             $messages
         );
     }
@@ -177,21 +169,17 @@ class Mailbox
     }
 
     /**
-     * @param $conversationDocument
      * @param array $messageDocumentList
      *
      * @return Conversation
      */
-    public function createConversationModel($conversationDocument, $messageDocumentList = array())
+    public function createConversationModel($messageDocumentList = array())
     {
-        $conversation = $this->conversationTransformer->fromDocumentToModel($conversationDocument);
-
+        $messageList = array();
         foreach ($messageDocumentList as $messageDocument) {
-            $messageDocument['conversation'] = $conversation->getId();
-            $message = $this->messageTransformer->fromDocumentToModel($messageDocument);
-            $conversation->addMessage($message);
+            $messageList[] = $this->messageTransformer->fromDocumentToModel($messageDocument);
         }
 
-        return $conversation;
+        return new Conversation($messageList);
     }
 }

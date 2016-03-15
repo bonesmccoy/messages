@@ -25,10 +25,10 @@ class Message implements ModelInterface
     protected $recipients = array();
 
     /** @var MessageAction[] */
-    protected $readers = array();
+    protected $readBy = array();
 
     /** @var MessageAction[] */
-    protected $deleted = array();
+    protected $deletedBy = array();
 
     /** @var int */
     private $conversationId;
@@ -130,7 +130,7 @@ class Message implements ModelInterface
      */
     public function getReaders()
     {
-        return $this->readers;
+        return $this->readBy;
     }
 
     /**
@@ -138,33 +138,33 @@ class Message implements ModelInterface
      */
     public function getDeleted()
     {
-        return $this->deleted;
+        return $this->deletedBy;
     }
 
     public function markAsReadForPerson(Person $person)
     {
         $action = MessageAction::factoryReadAction($person);
         if (isset($this->recipients[$person->getId()]) &&
-            !isset($this->readers[$person->getId()])
+            !isset($this->readBy[$person->getId()])
         ) {
-            $this->readers[$person->getId()] = $action;
+            $this->readBy[$person->getId()] = $action;
         }
     }
 
     public function isReadFromPerson(Person $person)
     {
-        return isset($this->readers[$person->getId()]);
+        return isset($this->readBy[$person->getId()]);
     }
 
     public function getReadDateForUser(Person $person)
     {
-        return  $this->isReadFromPerson($person) ? $this->readers[$person->getId()]->getDate() : null;
+        return  $this->isReadFromPerson($person) ? $this->readBy[$person->getId()]->getDate() : null;
     }
 
     public function markAsUnreadForPerson(Person $person)
     {
-        if (isset($this->readers[$person->getId()])) {
-            unset($this->readers[$person->getId()]);
+        if (isset($this->readBy[$person->getId()])) {
+            unset($this->readBy[$person->getId()]);
         }
     }
 
@@ -174,8 +174,8 @@ class Message implements ModelInterface
     public function markDeleteForPerson(Person $person)
     {
         $action = MessageAction::factoryDeleteAction($person);
-        if (!isset($this->deleted[$person->getId()])) {
-            $this->deleted[$person->getId()] = $action;
+        if (!isset($this->deletedBy[$person->getId()])) {
+            $this->deletedBy[$person->getId()] = $action;
         }
     }
 

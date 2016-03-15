@@ -6,9 +6,9 @@ Structure
 
 ```
 {
-    "id" : int,
+    "_id" : int,
     "status": draft | sent,
-    "parentId" : int|null,
+    "conversationId" : int,
     "senderId" : int,
     "recipientList" : [ 
         {
@@ -29,6 +29,6 @@ Structure
     "title" : "title 1 1",
     "body" : "body",
     "createdAt" : DateTime,
-    "sentAt" : DateTime
+    "sentDate" : DateTime
 }
 ```
