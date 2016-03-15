@@ -15,6 +15,9 @@ class ConversationSpec extends ObjectBehavior
         $message->beADoubleOf('Bones\Message\Model\Message');
         $message->getId()->willReturn(1);
         $message->getConversationId()->willReturn(1);
+        $message->getSentDate()->willReturn(new \DateTime());
+        $message->getSender()->willReturn(new Person(10));
+        $message->getRecipients()->willReturn(array());
         $message->getTitle()->willReturn("Message Title");
 
         $this->beConstructedWith(array($message));
@@ -68,7 +71,7 @@ class ConversationSpec extends ObjectBehavior
         $message->addRecipient($firstRecipient);
 
         $this->addMessage($message);
-        $this->getPersonList()->shouldHaveCount(2);
+        $this->getPersonList()->shouldHaveCount(3);
     }
 
     public function it_should_have_unread_messages_for_a_given_person()
