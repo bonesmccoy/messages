@@ -8,16 +8,22 @@ use PhpSpec\ObjectBehavior;
 
 class MessageSpec extends ObjectBehavior
 {
-    public function let(Person $person, Conversation $conversation)
+    public function let(Person $person)
     {
         $person->beADoubleOf('Bones\Message\Model\Person');
-        $conversation->beADoubleOf('Bones\Message\Model\Conversation');
-        $this->beConstructedWith($conversation, $person, 'title', 'body');
+        $this->beConstructedWith($person, 'title', 'body');
     }
 
     public function it_is_initializable()
     {
         $this->shouldHaveType('Bones\Message\Model\Message');
+    }
+
+    public function it_can_have_a_conversation()
+    {
+        $conversation = new Conversation();
+        $this->setConversation($conversation);
+        $this->getConversation()->shouldReturn($conversation);
     }
 
     public function it_has_a_date()

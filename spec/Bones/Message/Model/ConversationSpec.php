@@ -27,8 +27,7 @@ class ConversationSpec extends ObjectBehavior
     public function it_can_add_a_message()
     {
         $sender = new Person(1);
-        $conversation = new Conversation();
-        $message = new Message($conversation, $sender, 'title', 'body');
+        $message = new Message($sender, 'title', 'body');
 
         $this->addMessage($message);
         $this->getMessageList()->shouldHaveCount(1);
@@ -37,8 +36,7 @@ class ConversationSpec extends ObjectBehavior
     public function it_should_add_users_from_the_inserted_message()
     {
         $sender = new Person(1);
-        $conversation = new Conversation();
-        $message = new Message($conversation, $sender, 'title', 'body');
+        $message = new Message($sender, 'title', 'body');
 
         $firstRecipient = new Person(2);
         $message->addRecipient($firstRecipient);
@@ -52,13 +50,11 @@ class ConversationSpec extends ObjectBehavior
         $sender = new Person(1);
         $recipient = new Person(2);
 
-        $conversation = new Conversation();
-
-        $message = new Message($conversation, $sender, 'title 1', 'body');
+        $message = new Message($sender, 'title 1', 'body');
         $message->addRecipient($recipient);
         $this->addMessage($message);
 
-        $message = new Message($conversation, $sender, 'title 2', 'body');
+        $message = new Message($sender, 'title 2', 'body');
         $message->markAsReadForPerson($sender);
 
         $this->modifyMessageDate($message, new \DateTime('2016-01-01'));
@@ -76,13 +72,11 @@ class ConversationSpec extends ObjectBehavior
         $sender = new Person(1);
         $recipient = new Person(2);
 
-        $conversation = new Conversation();
-
-        $message = new Message($conversation, $sender, 'title 1', 'body');
+        $message = new Message($sender, 'title 1', 'body');
         $message->addRecipient($recipient);
         $this->addMessage($message);
 
-        $message = new Message($conversation, $sender, 'title 2', 'body');
+        $message = new Message($sender, 'title 2', 'body');
         $this->modifyMessageDate($message, new \DateTime('2016-01-01'));
         $message->addRecipient($recipient);
         $this->addMessage($message);
@@ -100,13 +94,11 @@ class ConversationSpec extends ObjectBehavior
         $sender = new Person(1);
         $recipient = new Person(2);
 
-        $conversation = new Conversation();
-
-        $message = new Message($conversation, $sender, 'title 1', 'body');
+        $message = new Message($sender, 'title 1', 'body');
         $message->addRecipient($recipient);
         $this->addMessage($message);
 
-        $message = new Message($conversation, $sender, 'title 2', 'body');
+        $message = new Message($sender, 'title 2', 'body');
         $this->modifyMessageDate($message, new \DateTime('2016-01-01'));
         $message->addRecipient($recipient);
         $this->addMessage($message);

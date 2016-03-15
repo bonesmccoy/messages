@@ -2,7 +2,7 @@
 
 namespace Bones\Message\Model;
 
-class Message
+class Message implements ModelInterface
 {
     protected $id;
 
@@ -38,19 +38,18 @@ class Message
     /**
      * Message constructor.
      *
-     * @param Conversation $conversation
      * @param Person       $sender
      * @param string title
      * @param string $body
      */
-    public function __construct(Conversation $conversation, Person $sender, $title, $body)
+    public function __construct(Person $sender, $title, $body)
     {
-        $this->conversation = $conversation;
         $this->sender = $sender;
         $this->body = $body;
         $this->date = new \DateTime();
         $this->title = $title;
     }
+
 
     /**
      * @return mixed
@@ -60,9 +59,29 @@ class Message
         return $this->id;
     }
 
+    /**
+     * @param Conversation $conversation
+     */
+    public function setConversation($conversation)
+    {
+        $this->conversation = $conversation;
+    }
+
+    /**
+     * @return Conversation
+     */
+    public function getConversation()
+    {
+        return $this->conversation;
+    }
+
     public function getConversationId()
     {
-        return ($this->conversation->getId()) ? $this->conversation->getId() : $this->generateConversationId();
+        if ($this->conversation && $this->conversation->getId()) {
+            return $this->conversation->getId();
+        } else {
+            return $this->generateConversationId();
+        }
     }
 
     private function generateConversationId()
