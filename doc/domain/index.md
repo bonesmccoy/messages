@@ -5,6 +5,7 @@ Person
 ------
 *is* the entity that can receive or send message
 *must* have access to a mailbox
+
 [Structure](./person.md)
 
 Message
