@@ -26,15 +26,15 @@ class Conversation implements ModelInterface
     public function __construct($messageList)
     {
         if (empty($messageList)) {
-            throw new \LogicException("Conversation must be costructed with at least one message");
+            throw new \LogicException("Conversation must be constructed with at least one message");
         }
 
         foreach($messageList as $message) {
             if ($message->getId() == $message->getConversationId()) {
                 $this->title = $message->getTitle();
                 $this->firstMessage = $message;
-                break;
             }
+            $this->addMessage($message);
         }
 
         if (!($this->firstMessage instanceof Message)) {
