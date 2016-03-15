@@ -67,8 +67,7 @@ class Conversation implements ModelInterface
      */
     public function createReplyMessage(Person $sender, $title, $body)
     {
-        $replyMessage = new Message($sender, $title, $body);
-        $replyMessage->setConversationId($this->getId());
+        $replyMessage = new Message($sender, $title, $body, $this->getId());
 
         return $replyMessage;
     }

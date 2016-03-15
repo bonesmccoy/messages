@@ -87,8 +87,8 @@ abstract class AbstractRepository
         $reflectionProperty->setAccessible(false);
 
         foreach ($messageDocumentList as $messageDocument) {
+            $messageDocument['conversation'] = $conversation->getId();
             $message = $this->createMessageModel($messageDocument);
-            $message->setConversationId($conversation->getId());
             $conversation->addMessage($message);
         }
 
