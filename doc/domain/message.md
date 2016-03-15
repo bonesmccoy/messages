@@ -30,5 +30,4 @@ Structure
     "createdDate" : DateTime,
     "sentDate" : DateTime
 }
-
 ```

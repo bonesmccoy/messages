@@ -5,6 +5,7 @@ Person
 ------
 *is* the entity that can receive or send message
 *must* have access to a mailbox
+[Structure](./person.md)
 
 Message
 -------
@@ -13,7 +14,8 @@ Message
 *must* have a sender
 *must* be part of conversation, either as a reply message or a new message
 *must* have a recipient in order to be sent.
-[details](./message.md)
+
+[Structure](./message.md)
 
 Conversation
 ------------
