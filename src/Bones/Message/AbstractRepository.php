@@ -14,10 +14,9 @@ abstract class AbstractRepository
      *
      * @return Message
      */
-    public function createMessageModel($messageDocument, Conversation $conversation)
+    public function createMessageModel($messageDocument)
     {
         $message = new Message(
-            $conversation,
             new Person($messageDocument['sender']),
             $messageDocument['title'],
             $messageDocument['body']
@@ -88,7 +87,8 @@ abstract class AbstractRepository
         $reflectionProperty->setAccessible(false);
 
         foreach ($messageDocumentList as $messageDocument) {
-            $message = $this->createMessageModel($messageDocument, $conversation);
+            $message = $this->createMessageModel($messageDocument);
+            $message->setConversationId($conversation->getId());
             $conversation->addMessage($message);
         }
 

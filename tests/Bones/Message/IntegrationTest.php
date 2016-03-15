@@ -39,8 +39,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $conversationList = $this->mailbox->getOutbox($sender);
         $this->assertCount(0, $conversationList);
 
-        $conversation = new Conversation();
-        $message = $this->sendMessageToConversationFromSender($conversation, $sender,'first message', 'of a conversation');
+        $message = $this->sendMessageToConversationFromSender($sender,'first message', 'of a conversation');
 
         $this->assertNotNull($message->getId());
 
@@ -60,8 +59,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 
         $sender = new Person(1);
         $recipient = new Person(2);
-        $conversation = new Conversation();
-        $message = $this->sendMessageToConversationFromSender($conversation, $sender,'first message', 'of a conversation', array($recipient));
+        $message = $this->sendMessageToConversationFromSender($sender,'first message', 'of a conversation', array($recipient));
 
         $recipientInboxConversation = $this->mailbox->getInbox($recipient);
         $this->assertCount(
@@ -103,8 +101,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $neil = new Person(1);
         $geddy = new Person(2);
 
-        $conversation = new Conversation();
-        $this->sendMessageToConversationFromSender($conversation, $neil, 'first message', 'of a conversation', array($geddy), new \DateTime('2016-01-01'));
+        $this->sendMessageToConversationFromSender($neil, 'first message', 'of a conversation', array($geddy), new \DateTime('2016-01-01'));
 
         $geddyInboxConversationList = $this->mailbox->getInbox($geddy);
         $this->assertCount(
@@ -170,7 +167,6 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param $conversation
      * @param $sender
      * @param $title
      * @param $body
@@ -178,10 +174,10 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
      * @param null $messageDate
      * @return Message
      */
-    private function sendMessageToConversationFromSender($conversation, $sender, $title, $body, $recipientList = array(), $messageDate = null)
+    private function sendMessageToConversationFromSender($sender, $title, $body, $recipientList = array(), $messageDate = null)
     {
         $messageDate = ($messageDate) ? $messageDate :  new \DateTime();
-        $message = new Message($conversation, $sender, $title, $body);
+        $message = new Message($sender, $title, $body);
         $this->overridePrivateProperty($message, 'date', $messageDate);
         foreach($recipientList as $recipient) {
             $message->addRecipient($recipient);

@@ -2,7 +2,7 @@
 
 namespace Bones\Message\Model;
 
-class Conversation
+class Conversation implements ModelInterface
 {
     public $id;
 
@@ -67,7 +67,10 @@ class Conversation
      */
     public function createReplyMessage(Person $sender, $title, $body)
     {
-        return new Message($this, $sender, $title, $body);
+        $replyMessage = new Message($sender, $title, $body);
+        $replyMessage->setConversationId($this->getId());
+
+        return $replyMessage;
     }
 
     /**
