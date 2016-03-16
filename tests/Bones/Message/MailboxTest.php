@@ -42,14 +42,14 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     {
         $conversationIdList = array(
             array('_id' => '1'),
-            array('_id' => '2'),
+            array('_id' => '5'),
         );
 
-        $this->mockAllConversation($conversationIdList);
+        $this->mockDriverGetAllConversation($conversationIdList);
 
         $loadedFixtures = $this->loadMessagesFixtures();
         foreach ($loadedFixtures['messages']  as $key => $message) {
-            if (!in_array($message['_id'], array('2', '3', '6'))) {
+            if (!in_array($message['conversationId'], array('1', '5'))) {
                 unset($loadedFixtures['messages'][$key]);
             }
         }
@@ -78,12 +78,12 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
             array('_id' => '1'),
         );
 
-        $this->mockAllConversation($conversationIdList);
+        $this->mockDriverGetAllConversation($conversationIdList);
 
         $loadedFixtures = $this->loadMessagesFixtures();
 
         foreach ($loadedFixtures['messages'] as $key => $message) {
-            if (!in_array($message['_id'], array('1'))) {
+            if (!in_array($message['conversationId'], array('1'))) {
                 unset($loadedFixtures['messages'][$key]);
             }
         }
@@ -106,14 +106,14 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     {
         $conversationIdList = array(
             array('_id' => '1'),
-            array('_id' => '6'),
+            array('_id' => '5'),
         );
 
-        $this->mockAllConversation($conversationIdList);
+        $this->mockDriverGetAllConversation($conversationIdList);
 
         $loadedFixtures = $this->loadMessagesFixtures();
         foreach ($loadedFixtures['messages']  as $key => $message) {
-            if (!in_array($message['_id'], array('2', '6'))) {
+            if (!in_array($message['conversationId'], array('1', '5'))) {
                 unset($loadedFixtures['messages'][$key]);
             }
         }
@@ -201,7 +201,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     /**
      * @param $conversationIdList
      */
-    private function mockAllConversation($conversationIdList)
+    private function mockDriverGetAllConversation($conversationIdList)
     {
         $this->driver
             ->method('findAllConversationIdForPersonId')
