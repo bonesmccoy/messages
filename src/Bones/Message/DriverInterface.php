@@ -16,6 +16,10 @@ interface DriverInterface
 
     public function findAllConversationIdForPersonId($personId, $offset = null, $limit = null);
 
+    public function findAllConversationIdForPersonIdAsSender($personId, $offset = null, $limit = null);
+
+    public function findAllConversationIdForPersonIdAsRecipient($personId, $offset = null, $limit = null);
+
     /**
      * @param int  $conversationId
      * @param null $offset
@@ -25,6 +29,8 @@ interface DriverInterface
      * @return array|\MongoCursor
      */
     public function findMessagesByConversationId($conversationId, $offset = null, $limit = null, $sortDateOrder = QueryBuilder::ORDER_DESC);
+
+    public function findAllMessagesByConversationIdList($conversationIdList);
 
     public function persistMessage($messageDocument);
 

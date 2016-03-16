@@ -118,48 +118,33 @@ class Driver implements DriverInterface
             )
         );
 
-        $query = QueryBuilder::GetAnd(
-            array(
-                $senderOrRecipientQuery,
-                $this->messageIsNotDeletedByPersonId($personId),
-            )
-        );
-
-        $pipeline = array(
-            array('$match' => $query),
-            array('$sort' => array('sentDate' => QueryBuilder::ORDER_DESC))
-        );
-
-
-        $pipeline[] = array('$group' => array(
-            '_id' => '$conversationId',
-            'title' => array('$first' => '$title'),
-            'date' => array('$first' => '$sentDate'),
-        ));
-
-        $pipeline[] = array(
-            '$sort' => array('date' => QueryBuilder::ORDER_DESC)
-        );
-
-        if ($offset !== null) {
-            $pipeline[] = array('$skip' => (int)$offset);
-        }
-
-        if ($limit) {
-            $pipeline[] = array('$limit' => (int)$limit);
-        }
-
-        $cursor = $this
-           ->getMessageCollection()
-           ->aggregate(
-               $pipeline,
-               array(
-                   'allowDiskUse' => true,
-               )
-           );
-
-        return (isset($cursor['result'])) ? $cursor['result'] : array();
+        return $this->queryAllConversationForPersonId($personId, $offset, $limit, $senderOrRecipientQuery);
     }
+
+    public function findAllConversationIdForPersonIdAsSender($personId, $offset = null, $limit = null)
+    {
+        $personId = (int) $personId;
+        $personAsSenderQuery = QueryBuilder::Equal('senderId', $personId);
+
+        return $this->queryAllConversationForPersonId($personId, $offset, $limit, $personAsSenderQuery);
+
+    }
+
+    public function findAllConversationIdForPersonIdAsRecipient($personId, $offset = null, $limit = null)
+    {
+        $personId = (int) $personId;
+        $personAsRecipientQuery = QueryBuilder::Equal('recipientList.personId', $personId);
+
+        return $this->queryAllConversationForPersonId($personId, $offset, $limit, $personAsRecipientQuery);
+    }
+
+    public function findAllMessagesByConversationIdList($conversationIdList)
+    {
+        $queryIn = QueryBuilder::GetIn('conversationId', $conversationIdList);
+
+        return $this->queryMessageCollection($queryIn);
+    }
+
 
     /**
      * @param int  $conversationId
@@ -217,5 +202,57 @@ class Driver implements DriverInterface
         $this->getMessageCollection()->remove(
             QueryBuilder::Equal('_id', new \MongoId($id))
         );
+    }
+
+    /**
+     * @param $personId
+     * @param $offset
+     * @param $limit
+     * @param $senderOrRecipientQuery
+     * @return array
+     */
+    private function queryAllConversationForPersonId($personId, $offset, $limit, $senderOrRecipientQuery)
+    {
+        $query = QueryBuilder::GetAnd(
+            array(
+                $senderOrRecipientQuery,
+                $this->messageIsNotDeletedByPersonId($personId),
+            )
+        );
+
+        $pipeline = array(
+            array('$match' => $query),
+            array('$sort' => array('sentDate' => QueryBuilder::ORDER_DESC))
+        );
+
+
+        $pipeline[] = array('$group' => array(
+            '_id' => '$conversationId',
+            'title' => array('$first' => '$title'),
+            'date' => array('$first' => '$sentDate'),
+        ));
+
+        $pipeline[] = array(
+            '$sort' => array('date' => QueryBuilder::ORDER_DESC)
+        );
+
+        if ($offset !== null) {
+            $pipeline[] = array('$skip' => (int)$offset);
+        }
+
+        if ($limit) {
+            $pipeline[] = array('$limit' => (int)$limit);
+        }
+
+        $cursor = $this
+            ->getMessageCollection()
+            ->aggregate(
+                $pipeline,
+                array(
+                    'allowDiskUse' => true,
+                )
+            );
+
+        return (isset($cursor['result'])) ? $cursor['result'] : array();
     }
 }

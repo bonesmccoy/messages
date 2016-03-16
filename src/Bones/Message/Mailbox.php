@@ -6,6 +6,7 @@ use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
 use Bones\Message\Service\MessageTransformer;
+use MongoId;
 
 class Mailbox
 {
@@ -39,9 +40,10 @@ class Mailbox
      */
     public function getInbox(Person $person, $offset = null, $limit = null)
     {
-        $conversationIdList = $this->fetchConversationIdListForPerson($person, $offset, $limit);
+        $conversations = $this->driver->findAllConversationIdForPersonIdAsRecipient((int)$person->getId(), $offset, $limit);
+        $conversationIdList = $this->createConversationIdList($conversations);
 
-        $messages = $this->driver->findAllReceivedMessages($person->getId(), $conversationIdList);
+        $messages = $this->driver->findAllMessagesByConversationIdList($conversationIdList);
 
         $messageDocumentGroupedByConversation = $this->groupMessagesByConversationId($messages);
 
@@ -59,7 +61,9 @@ class Mailbox
 
     public function getOutbox(Person $person, $offset = null, $limit = null)
     {
-        $conversationIdList = $this->fetchConversationIdListForPerson($person, $offset, $limit);
+        $conversations = $this->driver->findAllConversationIdForPersonIdAsSender((int)$person->getId(), $offset, $limit);
+        $conversationIdList = $this->createConversationIdList($conversations);
+
 
         $messages = $this->driver->findAllSentMessage($person->getId(), $conversationIdList);
 
@@ -102,13 +106,7 @@ class Mailbox
     {
         $conversations = $this->driver->findAllConversationIdForPersonId($person->getId(), $offset, $limit);
 
-        $conversationIdList = array();
-
-        foreach ($conversations as $conversationDocument) {
-            $conversationIdList[] = $conversationDocument['_id'];
-        }
-
-        return $conversationIdList;
+        return $this->createConversationIdList($conversations);
     }
 
     /**
@@ -128,13 +126,16 @@ class Mailbox
 
     public function sendMessage(Message $message)
     {
+        $message->send();
         $messageDocument = array(
             'senderId' => $message->getSender()->getId(),
             'sentDate' => (array) $message->getSentDate(),
             'title' => $message->getTitle(),
             'body' => $message->getBody(),
-            'conversationId' => $message->getConversationId(),
+            'conversationId' => (string) $message->getConversationId(),
         );
+
+
 
         $recipients = array();
 
@@ -151,8 +152,8 @@ class Mailbox
         $property->setValue($message, (string) $messageDocument['_id']);
         $property->setAccessible(false);
 
-        if ($message->getConversationId()) {
-            $messageDocument['conversationId'] = $messageDocument['_id'];
+        if (null == $message->getConversationId()) {
+            $messageDocument['conversationId'] = (string) $messageDocument['_id'];
             $this->driver->persistMessage($messageDocument);
         }
 
@@ -193,5 +194,24 @@ class Mailbox
         }
 
         return new Conversation($messageList);
+    }
+
+    /**
+     * @param $conversations
+     * @return array
+     */
+    private function createConversationIdList($conversations)
+    {
+        $conversationIdList = array();
+
+        foreach ($conversations as $conversationDocument) {
+            $conversationId = $conversationDocument['_id'];
+            if ($conversationId instanceof MongoId) {
+                $conversationId = (string)$conversationId;
+            }
+            $conversationIdList[] = $conversationId;
+        }
+
+        return $conversationIdList;
     }
 }

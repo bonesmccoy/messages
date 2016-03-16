@@ -41,9 +41,11 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $conversationList = $this->mailbox->getOutbox($sender);
         $this->assertCount(0, $conversationList);
 
-        $message = $this->sendMessageToConversationFromSender($sender,'first message', 'of a conversation');
+        $message = $this->sendMessageToConversationFromSender($sender,'first message', 'of a conversation', array(new Person(20)));
 
         $this->assertNotNull($message->getId());
+        $this->assertNotNull($message->getConversationId());
+        $this->assertEquals($message->getId(), $message->getConversationId());
 
         $conversationList = $this->mailbox->getOutbox($sender);
         $this->assertCount(1, $conversationList);
@@ -115,7 +117,6 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $conversation = array_shift(array_values($geddyInboxConversationList));
 
         $message = $conversation->createReplyMessage($geddy, 'reply message', 'of a conversation');
-        $this->overridePrivateProperty($message, 'date', new \DateTime('2016-01-02'));
         $message->addRecipient($neil);
         $this->mailbox->sendMessage($message);
 
@@ -156,19 +157,6 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param $object
-     * @param $propertyName
-     * @param $propertyValue
-     */
-    private function overridePrivateProperty($object, $propertyName, $propertyValue)
-    {
-        $dateProperty = new \ReflectionProperty($object, $propertyName);
-        $dateProperty->setAccessible(true);
-        $dateProperty->setValue($object, $propertyValue);
-        $dateProperty->setAccessible(false);
-    }
-
-    /**
      * @param $sender
      * @param $title
      * @param $body
@@ -178,9 +166,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
      */
     private function sendMessageToConversationFromSender($sender, $title, $body, $recipientList = array(), $messageDate = null)
     {
-        $messageDate = ($messageDate) ? $messageDate :  new \DateTime();
         $message = new Message($sender, $title, $body);
-        $this->overridePrivateProperty($message, 'sentDate', $messageDate);
         foreach($recipientList as $recipient) {
             $message->addRecipient($recipient);
         }
