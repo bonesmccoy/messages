@@ -5,7 +5,6 @@ namespace Bones\Message;
 use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
-use Bones\Message\Service\ConversationTransformer;
 use Bones\Message\Service\MessageTransformer;
 
 class Mailbox
@@ -130,18 +129,20 @@ class Mailbox
     public function sendMessage(Message $message)
     {
         $messageDocument = array(
-            'sender' => $message->getSender()->getId(),
-            'date' => (array) $message->getSentDate(),
+            'senderId' => $message->getSender()->getId(),
+            'sentDate' => (array) $message->getSentDate(),
             'title' => $message->getTitle(),
             'body' => $message->getBody(),
-            'conversation' => $message->getConversationId(),
+            'conversationId' => $message->getConversationId(),
         );
 
         $recipients = array();
+
         foreach ($message->getRecipients() as $recipient) {
-            $recipients[] = array('id' => $recipient->getId());
+            $recipients[] = array('personId' => $recipient->getId());
         }
-        $messageDocument['recipient'] = $recipients;
+
+        $messageDocument['recipientList'] = $recipients;
 
         $this->driver->persistMessage($messageDocument);
 
@@ -149,6 +150,17 @@ class Mailbox
         $property->setAccessible(true);
         $property->setValue($message, (string) $messageDocument['_id']);
         $property->setAccessible(false);
+
+        if ($message->getConversationId()) {
+            $messageDocument['conversationId'] = $messageDocument['_id'];
+            $this->driver->persistMessage($messageDocument);
+        }
+
+        $property = new \ReflectionProperty($message, 'conversationId');
+        $property->setAccessible(true);
+        $property->setValue($message, (string) $messageDocument['_id']);
+        $property->setAccessible(false);
+
     }
 
     public function removeMessage(Message $message)

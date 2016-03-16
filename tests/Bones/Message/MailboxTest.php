@@ -5,7 +5,6 @@ namespace tests\Bones\Message;
 use Bones\Component\Fixture\FixtureLoader;
 use Bones\Message\Mailbox;
 use Bones\Message\Model\Person;
-use Bones\Message\Service\ConversationTransformer;
 use Bones\Message\Service\MessageTransformer;
 
 class MailboxTest extends \PHPUnit_Framework_TestCase

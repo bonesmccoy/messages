@@ -66,7 +66,7 @@ class MessageTransformer implements ModelTransformerInterface
                 $dateTimeArray = $document[$dateField];
                 if (!empty($dateTimeArray)) {
                     $date = new \DateTime(
-                        $dateTimeArray[$dateField],
+                        $dateTimeArray['date'],
                         new \DateTimeZone($dateTimeArray['timezone'])
                     );
                 }
