@@ -33,8 +33,8 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         foreach ($messageList as $messageDocument) {
             $this->assertArrayHasKey('_id', $messageDocument);
-            $this->assertArrayHasKey('sender', $messageDocument);
-            $this->assertArrayHasKey('recipient', $messageDocument);
+            $this->assertArrayHasKey('senderId', $messageDocument);
+            $this->assertArrayHasKey('recipientList', $messageDocument);
             $this->assertArrayHasKey('title', $messageDocument);
             $this->assertArrayHasKey('body', $messageDocument);
         }
@@ -47,8 +47,8 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         foreach ($messages as $messageDocument) {
             $this->assertArrayHasKey('_id', $messageDocument);
-            $this->assertArrayHasKey('sender', $messageDocument);
-            $this->assertArrayHasKey('recipient', $messageDocument);
+            $this->assertArrayHasKey('senderId', $messageDocument);
+            $this->assertArrayHasKey('recipientList', $messageDocument);
             $this->assertArrayHasKey('title', $messageDocument);
             $this->assertArrayHasKey('body', $messageDocument);
         }
@@ -119,7 +119,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         $firstConversation = current($conversations);
         $this->assertEquals(
-            2,
+            1,
             $firstConversation['_id']
         );
     }

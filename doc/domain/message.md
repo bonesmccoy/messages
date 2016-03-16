@@ -25,6 +25,7 @@ Structure
         {
             "personId" : int,
             "date" : DateTime
+        }
     ],
     "title" : "title 1 1",
     "body" : "body",

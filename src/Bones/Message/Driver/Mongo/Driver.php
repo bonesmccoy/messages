@@ -65,7 +65,7 @@ class Driver implements DriverInterface
 
     private function messageIsNotDeletedByPersonId($personId)
     {
-        return QueryBuilder::NotEqual('deleted.id', $personId);
+        return QueryBuilder::NotEqual('deletedBy.personId', $personId);
     }
 
     public function getMessageById($id)
@@ -82,12 +82,12 @@ class Driver implements DriverInterface
     {
         $personId = (int) $personId;
         $andQuery = array(
-            array('sender' => $personId),
+            array('senderId' => $personId),
             $this->messageIsNotDeletedByPersonId($personId),
         );
 
         if (!empty($conversationIdList)) {
-            $andQuery[] = QueryBuilder::GetIn('conversation', $conversationIdList);
+            $andQuery[] = QueryBuilder::GetIn('conversationId', $conversationIdList);
         }
 
         return $this->queryMessageCollection(QueryBuilder::GetAnd($andQuery));
@@ -97,12 +97,12 @@ class Driver implements DriverInterface
     {
         $personId = (int) $personId;
         $andQuery = array(
-            array('recipient.id' => $personId),
+            array('recipientList.personId' => $personId),
             $this->messageIsNotDeletedByPersonId($personId),
         );
 
         if (!empty($conversationIdList)) {
-            $andQuery[] = QueryBuilder::GetIn('conversation', $conversationIdList);
+            $andQuery[] = QueryBuilder::GetIn('conversationId', $conversationIdList);
         }
 
         return $this->queryMessageCollection(QueryBuilder::GetAnd($andQuery));
@@ -113,8 +113,8 @@ class Driver implements DriverInterface
         $personId = (int) $personId;
         $senderOrRecipientQuery = QueryBuilder::GetOr(
             array(
-                QueryBuilder::Equal('sender', $personId),
-                QueryBuilder::Equal('recipient.id', $personId),
+                QueryBuilder::Equal('senderId', $personId),
+                QueryBuilder::Equal('recipientList.personId', $personId),
             )
         );
 
@@ -127,7 +127,18 @@ class Driver implements DriverInterface
 
         $pipeline = array(
             array('$match' => $query),
-            array('$sort' => array('date' => -1)),
+            array('$sort' => array('sentDate' => QueryBuilder::ORDER_DESC))
+        );
+
+
+        $pipeline[] = array('$group' => array(
+            '_id' => '$conversationId',
+            'title' => array('$first' => '$title'),
+            'date' => array('$first' => '$sentDate'),
+        ));
+
+        $pipeline[] = array(
+            '$sort' => array('date' => QueryBuilder::ORDER_DESC)
         );
 
         if ($offset !== null) {
@@ -138,20 +149,14 @@ class Driver implements DriverInterface
             $pipeline[] = array('$limit' => (int)$limit);
         }
 
-        $pipeline[] = array('$group' => array(
-            '_id' => '$conversation',
-            'title' => array('$first' => '$title'),
-            'date' => array('$first' => '$date'),
-        ));
-
         $cursor = $this
-            ->getMessageCollection()
-            ->aggregate(
-                $pipeline,
-                array(
-                    'allowDiskUse' => true,
-                )
-            );
+           ->getMessageCollection()
+           ->aggregate(
+               $pipeline,
+               array(
+                   'allowDiskUse' => true,
+               )
+           );
 
         return (isset($cursor['result'])) ? $cursor['result'] : array();
     }
@@ -172,7 +177,7 @@ class Driver implements DriverInterface
     ) {
         $cursor = $this
             ->queryMessageCollection(
-                        QueryBuilder::Equal('conversation', $conversationId)
+                        QueryBuilder::Equal('conversationId', $conversationId)
                     );
 
         if ($offset !== null) {
