@@ -114,10 +114,11 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         );
 
         /** @var Conversation $conversation */
-        $conversation = array_shift(array_values($geddyInboxConversationList));
+        $conversation = current($geddyInboxConversationList);
 
         $message = $conversation->createReplyMessage($geddy, 'reply message', 'of a conversation');
         $message->addRecipient($neil);
+        sleep(1);
         $this->mailbox->sendMessage($message);
 
         $neilInboxConversationList = $this->mailbox->getInbox($neil);

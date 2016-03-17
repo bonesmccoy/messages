@@ -162,7 +162,7 @@ class Driver implements DriverInterface
     ) {
         $cursor = $this
             ->queryMessageCollection(
-                        QueryBuilder::Equal('conversationId', $conversationId)
+                        QueryBuilder::Equal('conversationId', (string) $conversationId)
                     );
 
         if ($offset !== null) {
@@ -173,7 +173,7 @@ class Driver implements DriverInterface
         }
 
         $cursor->sort(array(
-            'date' => $sortDateOrder,
+            'sentDate' => $sortDateOrder,
         ));
 
         return $cursor;

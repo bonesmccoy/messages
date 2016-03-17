@@ -4,15 +4,19 @@
         {
             "type": "vcs",
             "url": "git@github.com:bonesmccoy/bongo-fixture-loader.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:bonesmccoy/bones-component-mongo.git"
         }
     ],
     "require": {
-
+        "bonesmccoy/bones-component-mongo" : "dev-master"
     },
     "require-dev": {
       "phpspec/phpspec": "~2.0",
       "phpunit/phpunit": "4.8.*",
-      "bonesmccoy/bongo-fixture-loader" : "1.*"
+      "bonesmccoy/bongo-fixture-loader" : "dev-dev/improvements"
     },
     "config": {
       "bin-dir": "bin"

@@ -1,16 +1,16 @@
 messages:
-    - {"_id" : 1, "conversationId" : 1, "senderId" : 1, "recipientList" : [ {"personId" : 2 }, {"personId": 3 }, {"personId": 4} ], "deletedBy": [{ "personId" : 10, "date" : '2016-03-04 12:00:00' }], 'title' : 'title 1 1', 'body' : 'body', 'date' : '2016-03-01 12:01:00' }
-    - {"_id" : 2, "conversationId" : 1, "senderId" : 2, "recipientList" : [ {"personId" : 1 }, {"personId": 3 }, {"personId": 4} ], 'title' : 'title 2 1', 'body' : 'body', 'sentDate' : '2016-03-02 12:02:00' }
-    - {"_id" : 3, "conversationId" : 1, "senderId" : 3, "recipientList" : [ {"personId" : 2 }, {"personId": 1 }, {"personId": 4} ], 'title' : 'title 3 1', 'body' : 'body', 'sentDate' : '2016-03-03 12:03:00' }
-    - {"_id" : 4, "conversationId" : 1, "senderId" : 4, "recipientList" : [ {"personId" : 2 }, {"personId": 3 }, {"personId": 1} ], 'title' : 'title 4 1', 'body' : 'body', 'sentDate' : '2016-03-04 12:04:00' }
-    - {"_id" : 5, "conversationId" : 5, "senderId" : 3, "recipientList" : [ {"personId" : 2 } ], 'title' : 'title 5 2 ', 'body' : 'body', 'sentDate' : '2016-03-04 12:05:00' }
-    - {"_id" : 6, "conversationId" : 5, "senderId" : 2, "recipientList" : [ {"personId" : 1 } ], 'title' : 'title 6 2', 'body' : 'body', 'sentDate' : '2016-02-04 12:06:00' }
-    - {"_id" : 7, "conversationId" : 7, "senderId" : 10, "recipientList" : [ {"personId" : 15 } ], 'title' : 'title 7 3', 'body' : 'body', 'sentDate' : '2016-03-04 12:00:00' }
-    - {"_id" : 8, "conversationId" : 8, "senderId" : 10, "recipientList" : [ {"personId" : 12 }, {"personId": 3 }, {"personId": 1 }, {"personId" : 10} ], "deletedBy": [{ "personId" : 3, "date" : '2016-03-04 12:05:00' }, { "personId" : 1 , "date": '2016-03-04 12:00:00'}, { "personId" : 10, "date" : '2016-03-04 12:00:00' } ], 'title' : 'title 8 4', 'body' : 'body', 'sentDate' : '2016-03-04 12:00:00' }
+    - {"_id" : 1, "conversationId" : "ref:1", "senderId" : 1, "recipientList" : [ {"personId" : 2 }, {"personId": 3 }, {"personId": 4} ], "deletedBy": [{ "personId" : 10, "date" : '2016-03-04 12:00:00' }], 'title' : 'title 1 1', 'body' : 'body', 'date' : '2016-03-01 12:01:00' }
+    - {"_id" : 2, "conversationId" : "ref:1", "senderId" : 2, "recipientList" : [ {"personId" : 1 }, {"personId": 3 }, {"personId": 4} ], 'title' : 'title 2 1', 'body' : 'body', 'sentDate' : '2016-03-02 12:02:00' }
+    - {"_id" : 3, "conversationId" : "ref:1", "senderId" : 3, "recipientList" : [ {"personId" : 2 }, {"personId": 1 }, {"personId": 4} ], 'title' : 'title 3 1', 'body' : 'body', 'sentDate' : '2016-03-03 12:03:00' }
+    - {"_id" : 4, "conversationId" : "ref:1", "senderId" : 4, "recipientList" : [ {"personId" : 2 }, {"personId": 3 }, {"personId": 1} ], 'title' : 'title 4 1', 'body' : 'body', 'sentDate' : '2016-03-04 12:04:00' }
+    - {"_id" : 5, "conversationId" : "ref:5", "senderId" : 3, "recipientList" : [ {"personId" : 2 } ], 'title' : 'title 5 2 ', 'body' : 'body', 'sentDate' : '2016-03-04 12:05:00' }
+    - {"_id" : 6, "conversationId" : "ref:5", "senderId" : 2, "recipientList" : [ {"personId" : 1 } ], 'title' : 'title 6 2', 'body' : 'body', 'sentDate' : '2016-02-04 12:06:00' }
+    - {"_id" : 7, "conversationId" : "ref:7", "senderId" : 10, "recipientList" : [ {"personId" : 15 } ], 'title' : 'title 7 3', 'body' : 'body', 'sentDate' : '2016-03-04 12:00:00' }
+    - {"_id" : 8, "conversationId" : "ref:8", "senderId" : 10, "recipientList" : [ {"personId" : 12 }, {"personId": 3 }, {"personId": 1 }, {"personId" : 10} ], "deletedBy": [{ "personId" : 3, "date" : '2016-03-04 12:05:00' }, { "personId" : 1 , "date": '2016-03-04 12:00:00'}, { "personId" : 10, "date" : '2016-03-04 12:00:00' } ], 'title' : 'title 8 4', 'body' : 'body', 'sentDate' : '2016-03-04 12:00:00' }
 
 
     # test limited conversation
-    - {"_id" : 9,  conversationId : 10, senderId : 20,  recipientList: [{ personId: 21 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-06-01"}
-    - {"_id" : 10, conversationId : 11, senderId : 20,  recipientList: [{ personId: 22 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-05-30"}
-    - {"_id" : 11, conversationId : 12, senderId : 20,  recipientList: [{ personId: 23 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-05-29" }
-    - {"_id" : 12, conversationId : 13, senderId : 20,  recipientList: [{ personId: 24 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-05-28"}
+    - {"_id" : 9,  conversationId : "ref:10", senderId : 20,  recipientList: [{ personId: 21 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-06-01"}
+    - {"_id" : 10, conversationId : "ref:11", senderId : 20,  recipientList: [{ personId: 22 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-05-30"}
+    - {"_id" : 11, conversationId : "ref:12", senderId : 20,  recipientList: [{ personId: 23 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-05-29" }
+    - {"_id" : 12, conversationId : "ref:13", senderId : 20,  recipientList: [{ personId: 24 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-05-28"}
