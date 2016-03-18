@@ -14,3 +14,4 @@ messages:
     - {"_id" : 56eb45003639330941000010, conversationId : "ref:56eb45003639330941000011", senderId : 20,  recipientList: [{ personId: 22 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-05-30"}
     - {"_id" : 56eb45003639330941000011, conversationId : "ref:56eb45003639330941000012", senderId : 20,  recipientList: [{ personId: 23 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-05-29" }
     - {"_id" : 56eb45003639330941000012, conversationId : "ref:56eb45003639330941000013", senderId : 20,  recipientList: [{ personId: 24 }], title: "1 sender 1 recipient 2 title", body: "", sentDate: "2016-05-28"}
+

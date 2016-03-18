@@ -40,15 +40,15 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     public function testGetInbox()
     {
         $conversationIdList = array(
-            array('_id' => '1'),
-            array('_id' => '5'),
+            array('_id' => '56eb45003639330941000001'),
+            array('_id' => '56eb45003639330941000005'),
         );
 
         $this->mockDriverGetAllConversation($conversationIdList);
 
         $loadedFixtures = $this->loadMessagesFixtures();
         foreach ($loadedFixtures['messages']  as $key => $message) {
-            if (!in_array($message['conversationId'], array('1', '5'))) {
+            if (!in_array($message['conversationId'], array('56eb45003639330941000001', '56eb45003639330941000005'))) {
                 unset($loadedFixtures['messages'][$key]);
             }
         }
@@ -74,7 +74,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     public function testGetOutbox()
     {
         $conversationIdList = array(
-            array('_id' => '1'),
+            array('_id' => '56eb45003639330941000001'),
         );
 
         $this->mockDriverGetAllConversation($conversationIdList);
@@ -82,7 +82,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
         $loadedFixtures = $this->loadMessagesFixtures();
 
         foreach ($loadedFixtures['messages'] as $key => $message) {
-            if (!in_array($message['conversationId'], array('1'))) {
+            if (!in_array($message['conversationId'], array('56eb45003639330941000001'))) {
                 unset($loadedFixtures['messages'][$key]);
             }
         }
@@ -104,15 +104,15 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     public function testOutBoxForPerson2()
     {
         $conversationIdList = array(
-            array('_id' => '1'),
-            array('_id' => '5'),
+            array('_id' => '56eb45003639330941000001'),
+            array('_id' => '56eb45003639330941000005'),
         );
 
         $this->mockDriverGetAllConversation($conversationIdList);
 
         $loadedFixtures = $this->loadMessagesFixtures();
         foreach ($loadedFixtures['messages']  as $key => $message) {
-            if (!in_array($message['conversationId'], array('1', '5'))) {
+            if (!in_array($message['conversationId'], array('56eb45003639330941000001', '56eb45003639330941000005'))) {
                 unset($loadedFixtures['messages'][$key]);
             }
         }
@@ -135,13 +135,12 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     {
         $loadedFixtures = $this->loadMessagesFixtures();
         foreach ($loadedFixtures['messages']  as $key => $message) {
-            if (!in_array($message['_id'], array('8'))) {
+            if (!in_array($message['_id'], array('56eb45003639330941000008'))) {
                 unset($loadedFixtures['messages'][$key]);
             }
         }
 
         $conversation = $this->mailbox->createConversationModel(
-            array('_id' => 4),
             $loadedFixtures['messages']
         );
 

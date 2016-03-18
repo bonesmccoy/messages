@@ -118,7 +118,7 @@ class Mailbox
     {
         $messageDocumentGroupedByConversation = array();
         foreach ($messages as $messageDocument) {
-            $messageDocumentGroupedByConversation[$messageDocument['conversationId']][] = $messageDocument;
+            $messageDocumentGroupedByConversation[(string)$messageDocument['conversationId']][] = $messageDocument;
         }
 
         return $messageDocumentGroupedByConversation;
@@ -132,7 +132,7 @@ class Mailbox
             'sentDate' => (array) $message->getSentDate(),
             'title' => $message->getTitle(),
             'body' => $message->getBody(),
-            'conversationId' => (string) $message->getConversationId(),
+            'conversationId' => $message->getConversationId(),
         );
 
 
@@ -149,17 +149,17 @@ class Mailbox
 
         $property = new \ReflectionProperty($message, 'id');
         $property->setAccessible(true);
-        $property->setValue($message, (string) $messageDocument['_id']);
+        $property->setValue($message, $messageDocument['_id']);
         $property->setAccessible(false);
 
         if (null == $message->getConversationId()) {
-            $messageDocument['conversationId'] = (string) $messageDocument['_id'];
+            $messageDocument['conversationId'] = $messageDocument['_id'];
             $this->driver->persistMessage($messageDocument);
         }
 
         $property = new \ReflectionProperty($message, 'conversationId');
         $property->setAccessible(true);
-        $property->setValue($message, (string) $messageDocument['_id']);
+        $property->setValue($message, $messageDocument['_id']);
         $property->setAccessible(false);
 
     }
@@ -206,9 +206,6 @@ class Mailbox
 
         foreach ($conversations as $conversationDocument) {
             $conversationId = $conversationDocument['_id'];
-            if ($conversationId instanceof MongoId) {
-                $conversationId = (string)$conversationId;
-            }
             $conversationIdList[] = $conversationId;
         }
 

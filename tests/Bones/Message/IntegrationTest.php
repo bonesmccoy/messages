@@ -2,6 +2,7 @@
 
 namespace tests\Bones\Message;
 
+use Bones\Component\Fixture\FixtureLoader;
 use Bones\Component\Fixture\Mongo\Data\MongoDataStore;
 use Bones\Component\Fixture\Mongo\FixtureParser;
 use Bones\Message\Driver\Mongo\Driver;
@@ -13,6 +14,7 @@ use Bones\Message\Service\MessageTransformer;
 
 class IntegrationTest extends \PHPUnit_Framework_TestCase
 {
+    protected $mongoDataStore;
     /**
      * @var Driver
      */
@@ -23,18 +25,28 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
      */
     protected $mailbox;
 
+    /**
+     * @var FixtureLoader
+     */
+    protected $fixtureLoader;
+
     public function setUp()
     {
         $dbName = 'integration-test';
         $this->driver = new Driver($dbName);
         $messageTransformer = new MessageTransformer();
         $this->mailbox = new Mailbox($this->driver, $messageTransformer);
-        $mongoDataStore = new MongoDataStore(
-            array('mongo_data_store' => array('db_name' => $dbName)),
+
+        $this->mongoDataStore = new MongoDataStore(
+            array('mongo_data_store' => array('db_name' => $dbName))
+        );
+
+        $this->fixtureLoader = new FixtureLoader(
+            $this->mongoDataStore,
             new FixtureParser()
         );
 
-        $mongoDataStore->emptyDataStore('messages');
+        $this->mongoDataStore->emptyDataStore('messages');
     }
 
     public function testAddNewMessageAndCreateAConversation()
@@ -107,9 +119,27 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $neil = new Person(1);
         $geddy = new Person(2);
 
-        $this->sendMessageToConversationFromSender($neil, 'first message', 'of a conversation', array($geddy), new \DateTime('2016-01-01'));
+        $message = array(
+            "_id" => '56eb45003639330941000013',
+            "conversationId" => 'ref:56eb45003639330941000013',
+            "senderId" => $neil->getId(),
+            "recipientList" => array(
+                array("personId" => $geddy->getId())
+            ),
+            "title" => 'Hello Geddy',
+            "body" => 'Are you up for the rehearsal today?',
+            "sentDate" => '2015-01-01',
+            "createdAt" => '2015-01-01'
+        );
+
+        $this->fixtureLoader->addFixturesWithCollection(
+            array("messages" => array($message) )
+        );
+
+        $this->fixtureLoader->persistLoadedFixtures();
 
         $geddyInboxConversationList = $this->mailbox->getInbox($geddy);
+
         $this->assertCount(
             1,
             $geddyInboxConversationList
@@ -150,7 +180,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $messageList[0]->getTitle(),
-            'first message'
+            'Hello Geddy'
         );
 
         $this->assertEquals(

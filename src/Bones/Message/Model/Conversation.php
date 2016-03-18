@@ -49,7 +49,7 @@ class Conversation implements ModelInterface
      */
     public function getId()
     {
-        return (string) $this->firstMessage->getId();
+        return $this->firstMessage->getId();
     }
 
     /**
