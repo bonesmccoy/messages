@@ -70,7 +70,8 @@ class Driver implements DriverInterface
 
     public function getMessageById($id)
     {
-        return $this->getMessageCollection()->findOne(QueryBuilder::Equal('_id', new \MongoId($id)));
+        $id = $this->ensureMongoIdInstance($id);
+        return $this->getMessageCollection()->findOne(QueryBuilder::Equal('_id', $id));
     }
 
     public function findAllMessages()
@@ -160,9 +161,11 @@ class Driver implements DriverInterface
         $limit = null,
         $sortDateOrder = QueryBuilder::ORDER_DESC
     ) {
+        $conversationId = $this->ensureMongoIdInstance($conversationId);
+
         $cursor = $this
             ->queryMessageCollection(
-                        QueryBuilder::Equal('conversationId', (string) $conversationId)
+                        QueryBuilder::Equal('conversationId', $conversationId)
                     );
 
         if ($offset !== null) {
@@ -188,9 +191,11 @@ class Driver implements DriverInterface
                     $messageDocument
                 );
         } else {
+            $documentId = $messageDocument['_id'];
+            $id = $this->ensureMongoIdInstance($documentId);
             $this->getMessageCollection()
                 ->update(
-                    array('_id' => new \MongoId($messageDocument['_id'])),
+                    array('_id' => $id),
                     $messageDocument,
                     array('fsync' => true)
                 );
@@ -199,8 +204,9 @@ class Driver implements DriverInterface
 
     public function removeMessageWithId($id)
     {
+        $id = $this->ensureMongoIdInstance($id);
         $this->getMessageCollection()->remove(
-            QueryBuilder::Equal('_id', new \MongoId($id))
+            QueryBuilder::Equal('_id', $id)
         );
     }
 
@@ -254,5 +260,15 @@ class Driver implements DriverInterface
             );
 
         return (isset($cursor['result'])) ? $cursor['result'] : array();
+    }
+
+    /**
+     * @param $documentId
+     * @return \MongoId
+     */
+    public function ensureMongoIdInstance($documentId)
+    {
+        $id = ($documentId instanceof \MongoId) ? $documentId : new \MongoId($documentId);
+        return $id;
     }
 }

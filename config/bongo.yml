@@ -1,5 +1,5 @@
 mongo_data_store:
-  db_name: messages_test
+  db_name: messages-test
   host: localhost
   port: 27017
   username: ''

@@ -2,8 +2,8 @@
 
 namespace tests\Bones\Message\Mongo\Driver;
 
+use Bones\Component\Mongo\Utilities;
 use Bones\Message\Driver\Mongo\Driver as MongoDriver;
-use Bones\Message\Model\Conversation;
 use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
 
@@ -14,10 +14,13 @@ class DriverTest extends \PHPUnit_Framework_TestCase
      */
     protected $driver;
 
+    private $timestamp;
+
     public function setUp()
     {
         $dbName = getenv('TestDbName') ? getenv('TestDbName') : 'message-test';
         $this->driver = new MongoDriver($dbName);
+        $this->timestamp = strtotime('today');
     }
 
     public function testInstance()
@@ -27,7 +30,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnMessagesListByConversationId()
     {
-        $messageList = $this->driver->findMessagesByConversationId(1);
+        $messageList = $this->driver->findMessagesByConversationId('56eb45003639330941000001');
 
         $this->assertCount(4, $messageList);
 
@@ -56,7 +59,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     public function testLimitMessageQuery()
     {
-        $messages = $this->driver->findMessagesByConversationId(1, 0, 2);
+        $messages = $this->driver->findMessagesByConversationId('56eb45003639330941000001', 0, 2);
         $this->assertCount(
             2,
             $messages
@@ -88,7 +91,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         foreach($conversations as $conversation) {
             $this->assertTrue(
-                in_array($conversation['_id'], array('10','11')),
+                in_array($conversation['_id'], array('56eb45003639330941000010','56eb45003639330941000011')),
                 "{$conversation['_id']} not found in [10,11]"
             );
         }
@@ -102,7 +105,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         foreach($conversations as $conversation) {
             $this->assertTrue(
-                in_array($conversation['_id'], array('12','13')),
+                in_array($conversation['_id'], array('56eb45003639330941000012','56eb45003639330941000013')),
                 "{$conversation['_id']} not found in [12,13]"
             );
         }
@@ -119,7 +122,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
         $firstConversation = current($conversations);
         $this->assertEquals(
-            1,
+            new \MongoId('56eb45003639330941000001'),
             $firstConversation['_id']
         );
     }

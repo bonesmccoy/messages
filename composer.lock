@@ -47,12 +47,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/bonesmccoy/bongo-fixture-loader.git",
-                "reference": "c558802f6a666dde7c82f33e869e0bd9207a33b0"
+                "reference": "0cdfd7eb4bec74f792f4d09365c1acf9f782d12a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bonesmccoy/bongo-fixture-loader/zipball/c558802f6a666dde7c82f33e869e0bd9207a33b0",
-                "reference": "c558802f6a666dde7c82f33e869e0bd9207a33b0",
+                "url": "https://api.github.com/repos/bonesmccoy/bongo-fixture-loader/zipball/0cdfd7eb4bec74f792f4d09365c1acf9f782d12a",
+                "reference": "0cdfd7eb4bec74f792f4d09365c1acf9f782d12a",
                 "shasum": ""
             },
             "require": {
@@ -77,7 +77,7 @@
                 "source": "https://github.com/bonesmccoy/bongo-fixture-loader/tree/dev/improvements",
                 "issues": "https://github.com/bonesmccoy/bongo-fixture-loader/issues"
             },
-            "time": "2016-03-17 16:34:38"
+            "time": "2016-03-18 11:29:23"
         },
         {
             "name": "doctrine/instantiator",
