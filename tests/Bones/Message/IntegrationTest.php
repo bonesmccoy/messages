@@ -3,6 +3,7 @@
 namespace tests\Bones\Message;
 
 use Bones\Component\Fixture\Mongo\Data\MongoDataStore;
+use Bones\Component\Fixture\Mongo\FixtureParser;
 use Bones\Message\Driver\Mongo\Driver;
 use Bones\Message\Mailbox;
 use Bones\Message\Model\Conversation;
@@ -29,7 +30,8 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $messageTransformer = new MessageTransformer();
         $this->mailbox = new Mailbox($this->driver, $messageTransformer);
         $mongoDataStore = new MongoDataStore(
-            array('mongo_data_store' => array('db_name' => $dbName))
+            array('mongo_data_store' => array('db_name' => $dbName)),
+            new FixtureParser()
         );
 
         $mongoDataStore->emptyDataStore('messages');
