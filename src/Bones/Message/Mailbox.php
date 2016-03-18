@@ -64,8 +64,7 @@ class Mailbox
         $conversations = $this->driver->findAllConversationIdForPersonIdAsSender((int)$person->getId(), $offset, $limit);
         $conversationIdList = $this->createConversationIdList($conversations);
 
-
-        $messages = $this->driver->findAllSentMessage($person->getId(), $conversationIdList);
+        $messages = $this->driver->findAllMessagesByConversationIdList($conversationIdList);
 
         $messageDocumentGroupedByConversation = $this->groupMessagesByConversationId($messages);
 

@@ -49,6 +49,11 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $this->mongoDataStore->emptyDataStore('messages');
     }
 
+    public function tearDown()
+    {
+        $this->mongoDataStore->emptyDataStore('messages');
+    }
+
     public function testAddNewMessageAndCreateAConversation()
     {
         $sender = new Person(1);

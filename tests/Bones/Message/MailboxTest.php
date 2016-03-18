@@ -87,7 +87,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
                 unset($loadedFixtures['messages'][$key]);
             }
         }
-        $this->mockAllSent($loadedFixtures);
+        $this->mockFindAllMessageByConversationId($loadedFixtures);
 
         $person = new Person(1);
         $outbox = $this->mailbox->getOutbox($person);
@@ -118,7 +118,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
             }
         }
 
-        $this->mockAllSent($loadedFixtures);
+        $this->mockFindAllMessageByConversationId($loadedFixtures);
 
         $person = new Person(2);
         $outbox = $this->mailbox->getOutbox($person);
@@ -190,10 +190,10 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     /**
      * @param $loadedFixtures
      */
-    private function mockAllSent($loadedFixtures)
+    private function mockFindAllMessageByConversationId($loadedFixtures)
     {
         $this->driver
-            ->method('findAllSentMessage')
+            ->method('findAllMessagesByConversationIdList')
             ->willReturn(array_values($loadedFixtures['messages']));
     }
 
