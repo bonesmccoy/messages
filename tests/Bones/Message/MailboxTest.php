@@ -44,9 +44,10 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
             array('_id' => '56eb45003639330941000005'),
         );
 
-        $this->mockDriverGetAllConversation($conversationIdList);
+        $this->mockDriverGetAllConversationAsRecipient($conversationIdList);
 
         $loadedFixtures = $this->loadMessagesFixtures();
+
         foreach ($loadedFixtures['messages']  as $key => $message) {
             if (!in_array($message['conversationId'], array('56eb45003639330941000001', '56eb45003639330941000005'))) {
                 unset($loadedFixtures['messages'][$key]);
@@ -54,7 +55,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->driver
-            ->method('findAllReceivedMessages')
+            ->method('findAllMessagesByConversationIdList')
             ->willReturn(array_values($loadedFixtures['messages']));
 
         $person = new Person(1);
@@ -77,7 +78,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
             array('_id' => '56eb45003639330941000001'),
         );
 
-        $this->mockDriverGetAllConversation($conversationIdList);
+        $this->mockDriverGetAllConversationAsSender($conversationIdList);
 
         $loadedFixtures = $this->loadMessagesFixtures();
 
@@ -108,7 +109,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
             array('_id' => '56eb45003639330941000005'),
         );
 
-        $this->mockDriverGetAllConversation($conversationIdList);
+        $this->mockDriverGetAllConversationAsSender($conversationIdList);
 
         $loadedFixtures = $this->loadMessagesFixtures();
         foreach ($loadedFixtures['messages']  as $key => $message) {
@@ -199,10 +200,20 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
     /**
      * @param $conversationIdList
      */
-    private function mockDriverGetAllConversation($conversationIdList)
+    private function mockDriverGetAllConversationAsRecipient($conversationIdList)
     {
         $this->driver
-            ->method('findAllConversationIdForPersonId')
+            ->method('findAllConversationIdForPersonIdAsRecipient')
+            ->willReturn($conversationIdList);
+    }
+
+    /**
+     * @param $conversationIdList
+     */
+    private function mockDriverGetAllConversationAsSender($conversationIdList)
+    {
+        $this->driver
+            ->method('findAllConversationIdForPersonIdAsSender')
             ->willReturn($conversationIdList);
     }
 }

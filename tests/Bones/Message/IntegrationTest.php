@@ -150,7 +150,6 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
 
         $message = $conversation->createReplyMessage($geddy, 'reply message', 'of a conversation');
         $message->addRecipient($neil);
-        sleep(1);
         $this->mailbox->sendMessage($message);
 
         $neilInboxConversationList = $this->mailbox->getInbox($neil);
