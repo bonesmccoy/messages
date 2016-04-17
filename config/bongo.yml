@@ -1,6 +1,6 @@
 mongo_data_store:
   db_name: messages-test
-  host: localhost
+  host: mongo
   port: 27017
   username: ''
   password: ''

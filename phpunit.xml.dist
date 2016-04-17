@@ -19,6 +19,9 @@
         </whitelist>
     </filter>
     <php>
-        <env name="TestDbName" value="messages-test"/>
+        <env name="test_db_name" value="messages-test"/>
+        <env name="test_db_host" value="mongo"/>
+        <env name="integration_db_name" value="integration-test"/>
+        <env name="integration_db_host" value="mongo"/>
     </php>
 </phpunit>

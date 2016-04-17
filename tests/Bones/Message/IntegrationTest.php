@@ -4,7 +4,7 @@ namespace tests\Bones\Message;
 
 use Bones\Component\Fixture\FixtureLoader;
 use Bones\Component\Fixture\Mongo\Data\MongoDataStore;
-use Bones\Component\Fixture\Mongo\FixtureParser;
+use Bones\Component\Fixture\Parser\FixtureTransformer;
 use Bones\Message\Driver\Mongo\Driver;
 use Bones\Message\Mailbox;
 use Bones\Message\Model\Conversation;
@@ -12,6 +12,11 @@ use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
 use Bones\Message\Service\MessageTransformer;
 
+/**
+ * Class IntegrationTest
+ *
+ * @package tests\Bones\Message
+ */
 class IntegrationTest extends \PHPUnit_Framework_TestCase
 {
     protected $mongoDataStore;
@@ -30,30 +35,41 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
      */
     protected $fixtureLoader;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
-        $dbName = 'integration-test';
-        $this->driver = new Driver($dbName);
+        $dbName = getenv('integration_db_name') ? getenv('integration_db_name') : 'integration-test';
+        $dbHost = getenv('integration_db_host') ? getenv('integration_db_host') : 'localhost';
+
+        $this->driver = new Driver($dbName, $dbHost);
         $messageTransformer = new MessageTransformer();
         $this->mailbox = new Mailbox($this->driver, $messageTransformer);
 
         $this->mongoDataStore = new MongoDataStore(
-            array('mongo_data_store' => array('db_name' => $dbName))
+            array('mongo_data_store' => array('db_name' => $dbName, 'host' => $dbHost))
         );
 
         $this->fixtureLoader = new FixtureLoader(
             $this->mongoDataStore,
-            new FixtureParser()
+            new FixtureTransformer()
         );
 
         $this->mongoDataStore->emptyDataStore('messages');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function tearDown()
     {
         $this->mongoDataStore->emptyDataStore('messages');
     }
 
+    /**
+     *
+     */
     public function testAddNewMessageAndCreateAConversation()
     {
         $sender = new Person(1);
@@ -125,8 +141,8 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase
         $geddy = new Person(2);
 
         $message = array(
-            "_id" => '56eb45003639330941000013',
-            "conversationId" => 'ref:56eb45003639330941000013',
+            "_id" => '<id@56eb45003639330941000013>',
+            "conversationId" => '<id@56eb45003639330941000013>',
             "senderId" => $neil->getId(),
             "recipientList" => array(
                 array("personId" => $geddy->getId())

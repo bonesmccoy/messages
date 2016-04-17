@@ -60,9 +60,12 @@ class MessageTransformer implements ModelTransformerInterface
      */
     private function setDateField($document, $dateField, $message)
     {
+
         if (isset($document[$dateField])) {
+
             $date = null;
-            if (is_array($document[$dateField])) {
+            $value = $document[$dateField];
+            if (is_array($value)) {
                 $dateTimeArray = $document[$dateField];
                 if (!empty($dateTimeArray)) {
                     $date = new \DateTime(
@@ -70,10 +73,12 @@ class MessageTransformer implements ModelTransformerInterface
                         new \DateTimeZone($dateTimeArray['timezone'])
                     );
                 }
-            } elseif (($document[$dateField] instanceof \Datetime)) {
+            } elseif ($value instanceof \Datetime) {
                 $date = $document[$dateField];
+            } elseif ($value instanceof \MongoDate) {
+                $date = $value->toDateTime();
             } else {
-                $date = new \DateTime($document[$dateField]);
+                $date = new \DateTime($value);
             }
 
             if ($date) {

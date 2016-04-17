@@ -34,7 +34,7 @@ class MailboxTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $messageTransformer = new MessageTransformer();
-        $this->buildMailbox($this->driver,$messageTransformer);
+        $this->buildMailbox($this->driver, $messageTransformer);
     }
 
     public function testGetInbox()

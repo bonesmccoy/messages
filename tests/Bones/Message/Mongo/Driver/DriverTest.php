@@ -7,6 +7,9 @@ use Bones\Message\Driver\Mongo\Driver as MongoDriver;
 use Bones\Message\Model\Message;
 use Bones\Message\Model\Person;
 
+/**
+ * Class DriverTest
+ */
 class DriverTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -16,21 +19,32 @@ class DriverTest extends \PHPUnit_Framework_TestCase
 
     private $timestamp;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
-        $dbName = getenv('TestDbName') ? getenv('TestDbName') : 'message-test';
-        $this->driver = new MongoDriver($dbName);
+        $dbName = getenv('test_db_name') ? getenv('test_db_name') : 'messages-test';
+        $dbHost = getenv('test_db_host') ? getenv('test_db_host') : 'localhost';
+
+        $this->driver = new MongoDriver($dbName, $dbHost);
         $this->timestamp = strtotime('today');
     }
 
+    /**
+     * Test instance
+     */
     public function testInstance()
     {
         $this->assertInstanceOf('\Bones\Message\Driver\Mongo\Driver', $this->driver);
     }
 
+    /**
+     * Test Message List
+     */
     public function testReturnMessagesListByConversationId()
     {
-        $messageList = $this->driver->findMessagesByConversationId('56eb45003639330941000001');
+        $messageList = $this->driver->findMessagesByConversationId(new \MongoId('56eb45003639330941000001'));
 
         $this->assertCount(4, $messageList);
 
@@ -43,6 +57,9 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * Test all Messages
+     */
     public function testFindAllMessages()
     {
         $messages = $this->driver->findAllMessages();
@@ -57,6 +74,9 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * Test Limit messages
+     */
     public function testLimitMessageQuery()
     {
         $messages = $this->driver->findMessagesByConversationId('56eb45003639330941000001', 0, 2);
@@ -66,6 +86,9 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * test Find all conversation for a given person
+     */
     public function testFindAllConversationsForAGivenPerson()
     {
         $conversations = $this->driver->findAllConversationIdForPersonId(10);
@@ -81,6 +104,9 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * test find all conversation for a person with limit
+     */
     public function testFindConversationForAGivePersonLimited()
     {
         $conversations = $this->driver->findAllConversationIdForPersonId(20, 0, 2);
@@ -89,7 +115,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
             $conversations
         );
 
-        foreach($conversations as $conversation) {
+        foreach ($conversations as $conversation) {
             $this->assertTrue(
                 in_array($conversation['_id'], array('56eb45003639330941000010','56eb45003639330941000011')),
                 "{$conversation['_id']} not found in [10,11]"
@@ -171,7 +197,7 @@ class DriverTest extends \PHPUnit_Framework_TestCase
         $newMessageId = (string) $messageDocument['_id'];
         $this->assertNotEmpty($newMessageId);
 
-        $persistedMessage = $this->driver->getMessageById($newMessageId);
+        $persistedMessage = $this->driver->getMessageById(new \MongoId($newMessageId));
         $this->assertEquals($messageDocument, $persistedMessage);
 
         $this->driver->removeMessageWithId($messageDocument['_id']);
